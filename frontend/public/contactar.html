@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contacto Directo - Dev Team</title>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: rgba(30, 41, 59, 0.7);
+            --accent-color: #3b82f6;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --font-family: 'Inter', system-ui, -apple-system, sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: var(--font-family);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .contact-card {
+            width: 100%;
+            max-width: 500px;
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            text-align: center;
+        }
+
+        h2 {
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+            background: linear-gradient(to right, #60a5fa, #a855f7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        p.subtitle {
+            color: var(--text-muted);
+            margin-bottom: 30px;
+            font-size: 0.95rem;
+        }
+
+        .contact-list {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            padding: 15px;
+            background: rgba(15, 23, 42, 0.5);
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: transform 0.2s ease, border-color 0.2s ease;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .contact-item:hover {
+            transform: scale(1.02);
+            border-color: var(--accent-color);
+        }
+
+        .icon-wrapper {
+            background: rgba(59, 130, 246, 0.1);
+            color: var(--accent-color);
+            padding: 12px;
+            border-radius: 12px;
+            display: flex;
+        }
+
+        .contact-details {
+            text-align: left;
+        }
+
+        .label {
+            display: block;
+            font-size: 0.7rem;
+            font-weight: 800;
+            color: var(--accent-color);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 2px;
+        }
+
+        .value {
+            font-size: 1.1rem;
+            font-weight: 500;
+        }
+
+        .social-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 30px;
+        }
+
+        .social-link {
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 10px;
+            color: var(--text-muted);
+            transition: all 0.2s;
+        }
+
+        .social-link:hover {
+            background: rgba(59, 130, 246, 0.1);
+            color: var(--accent-color);
+        }
+
+        @media (max-width: 400px) {
+            .contact-card {
+                padding: 25px;
+            }
+            .value {
+                font-size: 0.95rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="contact-card">
+        <h2>Canales de Contacto</h2>
+        <p class="subtitle">Estamos disponibles para soporte y consultas técnicas.</p>
+
+        <div class="contact-list">
+            <!-- Correo Electrónico -->
+            <a href="mailto:devs@team.example" class="contact-item">
+                <div class="icon-wrapper"><i data-lucide="mail"></i></div>
+                <div class="contact-details">
+                    <span class="label">Correo Electrónico</span>
+                    <span class="value">devs@team.example</span>
+                </div>
+            </a>
+
+            <!-- Teléfono / WhatsApp -->
+            <a href="tel:+1234567890" class="contact-item">
+                <div class="icon-wrapper"><i data-lucide="phone"></i></div>
+                <div class="contact-details">
+                    <span class="label">Teléfono / Soporte</span>
+                    <span class="value">+1 (234) 567-890</span>
+                </div>
+            </a>
+
+            <!-- LinkedIn o Perfil -->
+            <a href="#" class="contact-item">
+                <div class="icon-wrapper"><i data-lucide="message-square"></i></div>
+                <div class="contact-details">
+                    <span class="label">Chat en Vivo</span>
+                    <span class="value">@dev_community</span>
+                </div>
+            </a>
+        </div>
+
+        <div class="social-grid">
+            <a href="#" class="social-link"><i data-lucide="github"></i></a>
+            <a href="#" class="social-link"><i data-lucide="linkedin"></i></a>
+            <a href="#" class="social-link"><i data-lucide="twitter"></i></a>
+        </div>
+    </div>
+
+    <script>
+        // Inicializar Iconos de Lucide
+        lucide.createIcons();
+    </script>
+</body>
+</html>

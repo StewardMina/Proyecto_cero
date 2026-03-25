@@ -536,7 +536,12 @@
               <button
                 class="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-3 rounded-xl transition-all shadow-lg shadow-blue-900/20 uppercase text-xs"
               >
-                Contactar Asesor
+                 <a
+            href="public/contacto.html"
+            class="bg-white text-gray-800 px-8 py-4 rounded-2xl font-bold hover:bg-gray-50 shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 border border-gray-200"
+          >
+            Contactanos para Implementar
+          </a>
               </button>
             </div>
           </div>
