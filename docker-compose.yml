@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  db:
+    image: mysql:8.0
+    container_name: dactacero_db_test
+    environment:
+      MYSQL_DATABASE: proyecto_cero
+      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+    ports:
+      - "3306:3306"
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 5s
+      retries: 10

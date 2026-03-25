@@ -1,0 +1,9 @@
+{
+  "name": "dactacero-v3",
+  "version": "1.0.0",
+  "scripts": {
+    "install:all": "npm install && npm install --prefix backend",
+    "migrate": "npx sequelize-cli db:migrate --prefix backend",
+    "start:backend": "npm run dev --prefix backend"
+  }
+}
