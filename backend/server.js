@@ -1,6 +1,16 @@
 const express = require('express');
 const cors = require('cors'); // <--- 1. Importar cors
 const apiRoutes = require('./routes/api');
+const { execSync } = require('child_process');
+
+// Run migrations on startup
+try {
+  console.log('Running database migrations...');
+  execSync('npm run migrate', { stdio: 'inherit', cwd: __dirname });
+} catch (error) {
+  console.error('Migration failed:', error.message);
+  process.exit(1);
+}
 
 const app = express();
 
