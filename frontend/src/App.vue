@@ -86,7 +86,7 @@
         </p>
         <div class="flex flex-col sm:flex-row justify-center gap-4">
           <a
-            href="/ley1620.html"
+            href="public/ley1620.html"
             class="bg-white text-gray-800 px-8 py-4 rounded-2xl font-bold hover:bg-gray-50 shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 border border-gray-200"
           >
             Saber más sobre la Ley 1620
@@ -474,7 +474,7 @@
                 </li>
                 <li>
                   <a
-                    href="#ley1620"
+                    href="public/ley1620.html"
                     class="hover:text-white hover:translate-x-1 transition-all inline-block"
                     >Ley 1620</a
                   >
