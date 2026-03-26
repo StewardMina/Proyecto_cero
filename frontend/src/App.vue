@@ -1781,6 +1781,7 @@ export default {
       reporteParaEditar: { id: null, descripcion: "" },
       mostrarModalSeguimiento: false,
       reporteSeleccionado: null,
+      estadoOriginalReporte: null,
       mostrarModalUsuario: false,
 
       // Datos de usuario y navegación
@@ -2043,6 +2044,7 @@ export default {
 
     abrirSeguimiento(reporte) {
       this.reporteSeleccionado = reporte;
+      this.estadoOriginalReporte = reporte.estado;
       this.nuevaIntervencion = "";
       this.mostrarModalSeguimiento = true;
     },
@@ -2074,7 +2076,8 @@ export default {
         this.reporteSeleccionado.seguimiento = seguimientoActualizado;
         await this.obtenerReportes();
 
-        if (this.reporteSeleccionado.estado === "resuelto") {
+        const recienResuelto = this.reporteSeleccionado.estado === "resuelto" && this.estadoOriginalReporte !== "resuelto";
+        if (recienResuelto) {
           this.$nextTick(() => {
             this.descargarActa(this.reporteSeleccionado);
           });
