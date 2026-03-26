@@ -959,6 +959,11 @@
         </div>
         <nav class="flex-1 p-4 space-y-2 navigation-section">
           <button
+            @click="subTab = 'menu'"
+            :class="subTab === 'menu' ? 'bg-blue-700 shadow-inner' : 'hover:bg-blue-800'"
+            class="w-full flex items-center gap-3 p-4 rounded-xl font-bold transition-all"
+          >🏠 Inicio</button>
+          <button
             @click="subTab = 'reportes'; obtenerReportes();"
             :class="subTab === 'reportes' ? 'bg-blue-700 shadow-inner' : 'hover:bg-blue-800'"
             class="w-full flex items-center gap-3 p-4 rounded-xl font-bold transition-all"
@@ -985,6 +990,13 @@
 
       <!-- Navegación móvil (barra inferior) -->
       <nav class="md:hidden fixed bottom-0 left-0 right-0 bg-blue-900 text-white z-50 flex border-t border-blue-800 shadow-2xl">
+        <button
+          @click="subTab = 'menu'"
+          :class="subTab === 'menu' ? 'bg-blue-700' : ''"
+          class="flex-1 flex flex-col items-center justify-center py-3 gap-1 text-[10px] font-black uppercase transition-all"
+        >
+          <span class="text-lg">🏠</span>Inicio
+        </button>
         <button
           @click="subTab = 'reportes'; obtenerReportes();"
           :class="subTab === 'reportes' ? 'bg-blue-700' : ''"
@@ -1053,6 +1065,56 @@
             >
           </div>
         </header>
+
+        <!-- MENÚ PRINCIPAL -->
+        <section v-if="subTab === 'menu'" class="animate-fade-in">
+          <h2 class="text-xl md:text-2xl font-black text-blue-900 uppercase mb-6">
+            ¿Qué deseas hacer hoy?
+          </h2>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
+            <button
+              @click="subTab = 'reportes'; obtenerReportes();"
+              class="bg-white border-2 border-blue-100 hover:border-blue-400 rounded-[2rem] p-8 text-left flex items-start gap-5 shadow-sm hover:shadow-lg transition-all group"
+            >
+              <span class="text-5xl">📊</span>
+              <div>
+                <p class="text-lg font-black text-blue-900 group-hover:text-blue-600 transition-colors">Panel de Gestión</p>
+                <p class="text-sm text-gray-400 mt-1">Ver y gestionar todos los reportes de tu institución</p>
+              </div>
+            </button>
+            <button
+              @click="subTab = 'nuevoReporte'"
+              class="bg-white border-2 border-blue-100 hover:border-blue-400 rounded-[2rem] p-8 text-left flex items-start gap-5 shadow-sm hover:shadow-lg transition-all group"
+            >
+              <span class="text-5xl">📝</span>
+              <div>
+                <p class="text-lg font-black text-blue-900 group-hover:text-blue-600 transition-colors">Nuevo Reporte</p>
+                <p class="text-sm text-gray-400 mt-1">Registrar un nuevo caso o situación escolar</p>
+              </div>
+            </button>
+            <button
+              v-if="usuarioActivo?.rol === 'admin' || usuarioActivo?.rol === 'rector'"
+              @click="subTab = 'usuarios'; cargarUsuarios();"
+              class="bg-white border-2 border-blue-100 hover:border-blue-400 rounded-[2rem] p-8 text-left flex items-start gap-5 shadow-sm hover:shadow-lg transition-all group"
+            >
+              <span class="text-5xl">👥</span>
+              <div>
+                <p class="text-lg font-black text-blue-900 group-hover:text-blue-600 transition-colors">Gestión de Usuarios</p>
+                <p class="text-sm text-gray-400 mt-1">Administrar estudiantes y personal de la institución</p>
+              </div>
+            </button>
+            <button
+              @click="cerrarSesion"
+              class="bg-white border-2 border-red-100 hover:border-red-400 rounded-[2rem] p-8 text-left flex items-start gap-5 shadow-sm hover:shadow-lg transition-all group"
+            >
+              <span class="text-5xl">🚪</span>
+              <div>
+                <p class="text-lg font-black text-gray-700 group-hover:text-red-600 transition-colors">Cerrar Sesión</p>
+                <p class="text-sm text-gray-400 mt-1">Salir de tu cuenta de forma segura</p>
+              </div>
+            </button>
+          </div>
+        </section>
 
         <section v-if="subTab === 'reportes'" class="animate-fade-in space-y-8">
           <div
@@ -1895,7 +1957,7 @@ export default {
 
       // Datos de usuario y navegación
       ventana: "inicio",
-      subTab: "reportes",
+      subTab: "menu",
       usuarioActivo: null,
       cargando: false,
 
