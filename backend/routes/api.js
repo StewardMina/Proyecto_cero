@@ -14,7 +14,10 @@ function crearTransporter() {
         auth: {
             user: process.env.EMAIL_USER,
             pass: process.env.EMAIL_PASS
-        }
+        },
+        connectionTimeout: 10000,
+        greetingTimeout: 10000,
+        socketTimeout: 15000
     });
 }
 
@@ -531,6 +534,10 @@ router.post('/auth/forgot-password', async (req, res) => {
 
         const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
         const resetLink = `${frontendUrl}?token=${token}`;
+
+        if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+            return res.status(500).json({ success: false, message: "El servicio de correo no está configurado. Contacta al administrador." });
+        }
 
         const transporter = crearTransporter();
         const destinatario = usuario.correo_recuperacion || usuario.correo;
