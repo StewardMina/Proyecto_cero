@@ -340,4 +340,87 @@ router.delete('/usuarios/:id', async (req, res) => {
     }
 });
 
+// ─── CHATBOT IA ───────────────────────────────────────────────────────────────
+router.post('/chatbot', async (req, res) => {
+    const { mensaje, historial } = req.body;
+    if (!mensaje) return res.status(400).json({ success: false, message: 'Mensaje vacío.' });
+
+    try {
+        const Anthropic = require('@anthropic-ai/sdk');
+        const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+
+        const systemPrompt = `Eres el asistente virtual de C.E.R.O. (Convivencia Escolar con Respeto y Orden), una plataforma colombiana de gestión del clima escolar alineada con la Ley 1620 de 2013.
+
+Tu rol es orientar a estudiantes, docentes, rectores y padres de familia sobre:
+
+1. LEY 1620 DE 2013:
+- Crea el Sistema Nacional de Convivencia Escolar y Formación para los Derechos Humanos
+- Establece el Comité de Convivencia Escolar en cada institución
+- Define tres tipos de situaciones:
+  * TIPO I: Conflictos esporádicos, malentendidos, diferencias sin daño sistemático. Se resuelven con diálogo y mediación.
+  * TIPO II: Acoso escolar (bullying) o ciberacoso repetitivo que afecta el bienestar. Requiere intervención del Comité de Convivencia.
+  * TIPO III: Situaciones que constituyen presuntos delitos (agresión grave, abuso, extorsión). Requieren intervención de autoridades judiciales (ICBF, Policía, Fiscalía).
+
+2. TIPOS DE ACOSO ESCOLAR:
+- Verbal: insultos, apodos, amenazas, burlas repetidas
+- Físico: golpes, empujones, daño a objetos personales
+- Social/Relacional: exclusión, rumores, aislamiento
+- Ciberacoso: hostigamiento por redes sociales, mensajes, difusión de contenido sin consentimiento
+- Sexual: comentarios o tocamientos inapropiados
+
+3. SEÑALES DE ALERTA en víctimas:
+- Cambios de humor, tristeza o ansiedad
+- Rechazo a ir al colegio
+- Bajo rendimiento académico repentino
+- Heridas sin explicación
+- Pérdida de objetos
+- Aislamiento de amigos y familia
+
+4. CÓMO USAR C.E.R.O.:
+- Estudiantes pueden enviar reportes anónimos o con nombre
+- Los reportes son revisados por el Comité de Convivencia
+- Se hace seguimiento y gestión del caso
+- El administrador categoriza el tipo de situación
+
+5. DERECHOS Y PROTOCOLOS:
+- Toda víctima tiene derecho a protección, escucha y respuesta oportuna
+- El colegio tiene 5 días hábiles para dar respuesta a un Tipo I, acción inmediata para Tipo II/III
+- ICBF: 018000 918080 (línea gratuita)
+- Línea 106: salud mental adolescentes (gratuita)
+- Policía Nacional: 123
+
+6. CONSEJOS PARA VÍCTIMAS:
+- No estás solo/a, pedir ayuda es un acto de valentía
+- Guarda evidencias (capturas, mensajes)
+- Cuéntale a un adulto de confianza
+- No respondas agresiones con más agresión
+- Usa la plataforma C.E.R.O. para reportar
+
+Responde siempre en español, de forma empática, clara y concisa. Máximo 3 párrafos por respuesta. Si la pregunta no está relacionada con convivencia escolar, bullying, Ley 1620 o C.E.R.O., redirige amablemente al tema.`;
+
+        const messages = [];
+        if (historial && Array.isArray(historial)) {
+            historial.slice(-6).forEach(msg => {
+                messages.push({
+                    role: msg.emisor === 'usuario' ? 'user' : 'assistant',
+                    content: msg.texto
+                });
+            });
+        }
+        messages.push({ role: 'user', content: mensaje });
+
+        const response = await client.messages.create({
+            model: 'claude-haiku-4-5-20251001',
+            max_tokens: 400,
+            system: systemPrompt,
+            messages
+        });
+
+        res.json({ success: true, respuesta: response.content[0].text });
+    } catch (error) {
+        console.error('Error chatbot:', error.message);
+        res.status(500).json({ success: false, message: 'Error al procesar tu pregunta.' });
+    }
+});
+
 module.exports = router;

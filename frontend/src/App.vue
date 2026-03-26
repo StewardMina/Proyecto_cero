@@ -799,13 +799,13 @@
         <p class="text-slate-400 text-sm mb-8">Estamos disponibles para soporte y consultas técnicas.</p>
 
         <div class="flex flex-col gap-4 mb-8">
-          <a href="mailto:devs@team.example" class="flex items-center gap-4 p-4 bg-slate-900/50 border border-white/5 rounded-2xl hover:border-blue-500 transition-all text-left group">
+          <a href="mailto:soporte@proyectocero.com" class="flex items-center gap-4 p-4 bg-slate-900/50 border border-white/5 rounded-2xl hover:border-blue-500 transition-all text-left group">
             <div class="bg-blue-500/10 text-blue-400 p-3 rounded-xl">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
             </div>
             <div>
               <span class="block text-[10px] font-black text-blue-400 uppercase tracking-widest mb-0.5">Correo Electrónico</span>
-              <span class="text-white font-medium text-sm">devs@team.example</span>
+              <span class="text-white font-medium text-sm">soporte@proyectocero.com</span>
             </div>
           </a>
 
@@ -1684,7 +1684,7 @@
           v-for="(msg, idx) in historialChat"
           :key="idx"
           :class="[
-            'p-3 rounded-2xl max-w-[80%] shadow-sm',
+            'p-3 rounded-2xl max-w-[80%] shadow-sm text-xs leading-relaxed',
             msg.emisor === 'bot'
               ? 'bg-white text-gray-700 rounded-bl-none'
               : 'bg-blue-600 text-white ml-auto rounded-br-none',
@@ -1692,18 +1692,26 @@
         >
           {{ msg.texto }}
         </div>
+        <!-- Indicador escribiendo -->
+        <div v-if="chatCargando" class="bg-white p-3 rounded-2xl rounded-bl-none max-w-[60%] shadow-sm flex gap-1 items-center">
+          <span class="w-2 h-2 bg-blue-400 rounded-full animate-bounce" style="animation-delay:0ms"></span>
+          <span class="w-2 h-2 bg-blue-400 rounded-full animate-bounce" style="animation-delay:150ms"></span>
+          <span class="w-2 h-2 bg-blue-400 rounded-full animate-bounce" style="animation-delay:300ms"></span>
+        </div>
       </div>
 
       <div class="p-3 border-t bg-white flex gap-2">
         <input
           v-model="mensajeChat"
           @keyup.enter="enviarDuda"
+          :disabled="chatCargando"
           type="text"
           placeholder="Escribe tu duda..."
-          class="flex-1 text-xs p-2 bg-gray-100 rounded-xl outline-none focus:ring-2 focus:ring-blue-600"
+          class="flex-1 text-xs p-2 bg-gray-100 rounded-xl outline-none focus:ring-2 focus:ring-blue-600 disabled:opacity-50"
         />
         <button
           @click="enviarDuda"
+          :disabled="chatCargando"
           type="button"
           class="bg-blue-600 text-white p-2 rounded-xl hover:bg-blue-700 transition-colors cursor-pointer"
         >
@@ -1735,11 +1743,12 @@ export default {
     return {
       mostrarChatbot: false,
       mensajeChat: "",
+      chatCargando: false,
       historialChat: [
         {
           emisor: "bot",
           texto:
-            "¡Hola! Soy el asistente de C.E.R.O. ¿En qué puedo ayudarte hoy?",
+            "¡Hola! Soy el asistente de C.E.R.O. Puedo ayudarte con información sobre acoso escolar, Ley 1620, cómo reportar casos y más. ¿En qué puedo ayudarte?",
         },
       ],
       // Base de conocimiento para respuestas rápidas
@@ -1892,48 +1901,40 @@ export default {
   },
 
   methods: {
-    enviarDuda() {
+    async enviarDuda() {
       if (!this.mensajeChat || !this.mensajeChat.trim()) return;
-      this.historialChat.push({
-        emisor: "usuario",
-        texto: this.mensajeChat,
+
+      const mensaje = this.mensajeChat;
+      this.historialChat.push({ emisor: "usuario", texto: mensaje });
+      this.mensajeChat = "";
+      this.chatCargando = true;
+
+      this.$nextTick(() => {
+        const container = this.$refs.chatContainer;
+        if (container) container.scrollTop = container.scrollHeight;
       });
 
-      const consulta = this.mensajeChat.toLowerCase();
-      let respuesta =
-        "Lo siento, no entiendo esa pregunta. Prueba con: 'Ley 1620', 'reportar' o 'anonimato'.";
-
-      const baseConocimiento = {
-        "ley 1620":
-          "La Ley 1620 de 2013 fortalece la convivencia escolar y previene la violencia en las instituciones.",
-        reportar:
-          "Haz clic en el botón 'Reportar' de tu panel, llena los datos y dale a enviar.",
-        anonimo:
-          "¡Claro! Los reportes pueden ser anónimos para garantizar tu tranquilidad.",
-        hola: "¡Hola! Soy el asistente de C.E.R.O. ¿En qué puedo ayudarte?",
-      };
-
-      for (let clave in baseConocimiento) {
-        if (consulta.includes(clave)) {
-          respuesta = baseConocimiento[clave];
-          break;
-        }
-      }
-
-      this.mensajeChat = "";
-      setTimeout(() => {
+      try {
+        const response = await api.post("/chatbot", {
+          mensaje,
+          historial: this.historialChat.slice(-8),
+        });
         this.historialChat.push({
           emisor: "bot",
-          texto: respuesta,
+          texto: response.data.respuesta,
         });
-
+      } catch {
+        this.historialChat.push({
+          emisor: "bot",
+          texto: "Lo siento, no puedo responder en este momento. Intenta de nuevo más tarde.",
+        });
+      } finally {
+        this.chatCargando = false;
         this.$nextTick(() => {
           const container = this.$refs.chatContainer;
-          if (container) {
-            container.scrollTop = container.scrollHeight;
-          }
+          if (container) container.scrollTop = container.scrollHeight;
         });
-      }, 500);
+      }
     },
 
     toggleChat() {
