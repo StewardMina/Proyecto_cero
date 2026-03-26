@@ -467,13 +467,6 @@
               <ul class="space-y-4 text-sm font-bold text-gray-300">
                 <li>
                   <a
-                    @click="ventana = 'inicio'"
-                    class="hover:text-white hover:translate-x-1 transition-all inline-block cursor-pointer"
-                    >Inicio</a
-                  >
-                </li>
-                <li>
-                  <a
                     href="/ley1620.html"
                     class="hover:text-white hover:translate-x-1 transition-all inline-block"
                     >Ley 1620</a
