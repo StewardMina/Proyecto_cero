@@ -836,10 +836,10 @@
       class="min-h-screen flex items-center justify-center p-4 bg-yellow-50"
     >
       <div
-        class="bg-white p-12 rounded-[3rem] shadow-xl w-full max-w-md border border-yellow-100 text-center animate-fade-in"
+        class="bg-white p-6 sm:p-8 md:p-10 rounded-[2rem] md:rounded-[3rem] shadow-xl w-full max-w-md border border-yellow-100 text-center animate-fade-in"
       >
         <div
-          class="bg-yellow-100 text-yellow-600 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6"
+          class="bg-yellow-100 text-yellow-600 w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 rounded-full flex items-center justify-center mx-auto mb-4 md:mb-6"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -869,19 +869,19 @@
             v-model="nuevaPass"
             type="password"
             placeholder="Nueva Contraseña"
-            class="w-full p-5 bg-gray-50 border-2 rounded-2xl font-bold outline-none focus:border-blue-600"
+            class="w-full p-4 sm:p-5 bg-gray-50 border-2 rounded-2xl font-bold outline-none focus:border-blue-600"
             required
           />
           <input
             v-model="confirmarPass"
             type="password"
             placeholder="Confirmar Contraseña"
-            class="w-full p-5 bg-gray-50 border-2 rounded-2xl font-bold outline-none focus:border-blue-600"
+            class="w-full p-4 sm:p-5 bg-gray-50 border-2 rounded-2xl font-bold outline-none focus:border-blue-600"
             required
           />
           <button
             type="submit"
-            class="w-full bg-blue-600 text-white py-5 rounded-2xl font-black text-lg hover:bg-blue-700 transition-all uppercase shadow-lg"
+            class="w-full bg-blue-600 text-white py-4 md:py-5 rounded-2xl font-black text-base md:text-lg hover:bg-blue-700 transition-all uppercase shadow-lg"
           >
             Actualizar y Entrar
           </button>
@@ -1027,7 +1027,7 @@
         </button>
       </nav>
 
-      <main class="flex-1 p-4 md:p-8 overflow-y-auto pb-24 md:pb-8">
+      <main class="flex-1 p-3 sm:p-4 md:p-6 lg:p-8 overflow-y-auto pb-24 md:pb-8">
         <div
           class="mb-8 p-6 bg-gradient-to-r from-blue-600 to-indigo-700 rounded-[2rem] shadow-lg animate-fade-in relative overflow-hidden system-header"
         >
@@ -1307,7 +1307,7 @@
                         <span class="text-[10px] text-gray-400 font-bold italic">Remitente</span>
                       </div>
                     </td>
-                    <td class="p-3 md:p-6 text-gray-600 max-w-[120px] md:max-w-xs font-medium">
+                    <td class="p-2 sm:p-3 md:p-6 text-gray-600 max-w-[100px] sm:max-w-[160px] md:max-w-xs font-medium">
                       <div class="flex flex-col gap-1">
                         <span class="truncate block">{{ reporte.descripcion }}</span>
                         <span
@@ -1343,8 +1343,8 @@
                         class="px-2 py-1 rounded-full text-[10px] font-black uppercase italic whitespace-nowrap"
                         >{{ reporte.estado }}</span>
                     </td>
-                    <td class="p-3 md:p-6 text-center">
-                      <div class="flex justify-center gap-2">
+                    <td class="p-2 sm:p-3 md:p-6 text-center">
+                      <div class="flex justify-center gap-1 sm:gap-2">
                         <button
                           v-if="
                             reporte.estado === 'nuevo' && reporte.editado != 1
@@ -1384,7 +1384,7 @@
                             usuarioActivo?.rol === 'rector'
                           "
                           @click="abrirSeguimiento(reporte)"
-                          class="bg-indigo-600 text-white px-4 py-2 rounded-xl font-bold text-xs hover:bg-indigo-700 transition-all uppercase"
+                          class="bg-indigo-600 text-white px-2 sm:px-4 py-2 rounded-xl font-bold text-[10px] sm:text-xs hover:bg-indigo-700 transition-all uppercase whitespace-nowrap"
                         >
                           ⚙️ Gestionar
                         </button>
@@ -1399,20 +1399,20 @@
 
         <section v-if="subTab === 'usuarios'" class="animate-fade-in space-y-8">
           <div
-            class="flex justify-between items-center bg-white p-6 rounded-3xl shadow-sm border border-gray-100"
+            class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 bg-white p-4 sm:p-6 rounded-3xl shadow-sm border border-gray-100"
           >
-            <h2 class="text-xl font-black text-blue-900 uppercase">
+            <h2 class="text-lg sm:text-xl font-black text-blue-900 uppercase">
               Gestión de Usuarios
             </h2>
             <input
               v-model="filtroNombre"
               type="text"
               placeholder="Buscar usuario..."
-              class="p-3 bg-gray-50 border-2 rounded-xl text-sm font-bold outline-none focus:border-blue-500"
+              class="w-full sm:w-auto p-3 bg-gray-50 border-2 rounded-xl text-sm font-bold outline-none focus:border-blue-500"
             />
             <button
               @click="mostrarModalUsuario = true"
-              class="bg-blue-600 text-white px-6 py-3 rounded-xl font-bold hover:bg-blue-700 shadow-lg flex items-center gap-2"
+              class="w-full sm:w-auto bg-blue-600 text-white px-5 py-3 rounded-xl font-bold hover:bg-blue-700 shadow-lg flex items-center justify-center gap-2"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -1431,7 +1431,7 @@
           </div>
 
           <div
-            class="bg-indigo-50 p-8 rounded-[2.5rem] border-2 border-dashed border-indigo-200 flex flex-col md:flex-row items-center justify-between gap-6"
+            class="bg-indigo-50 p-5 sm:p-6 md:p-8 rounded-[2rem] md:rounded-[2.5rem] border-2 border-dashed border-indigo-200 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 md:gap-6"
           >
             <div class="flex items-center gap-4">
               <div class="bg-indigo-600 text-white p-3 rounded-2xl shadow-lg">
@@ -1461,12 +1461,12 @@
                 </p>
               </div>
             </div>
-            <div class="flex flex-col items-end gap-2">
+            <div class="flex flex-col items-start md:items-end gap-2 w-full md:w-auto">
               <input
                 type="file"
                 @change="procesarExcel"
                 accept=".xlsx, .xls"
-                class="text-xs text-gray-500 file:mr-4 file:py-2 file:px-6 file:rounded-full file:border-0 file:text-xs file:font-black file:bg-indigo-600 file:text-white hover:file:bg-indigo-700 cursor-pointer transition-all"
+                class="w-full text-xs text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-black file:bg-indigo-600 file:text-white hover:file:bg-indigo-700 cursor-pointer transition-all"
               />
               <button
                 @click="descargarPlantilla"
@@ -1486,12 +1486,12 @@
                   class="bg-gray-50 text-gray-400 text-xs uppercase font-black"
                 >
                   <tr>
-                    <th class="p-6">ID</th>
-                    <th class="p-6">Nombre</th>
-                    <th class="p-6">Correo / ID</th>
-                    <th class="p-6">Rol</th>
-                    <th class="p-6">Grado</th>
-                    <th class="p-6 text-center">Acción</th>
+                    <th class="p-2 sm:p-3 md:p-6 hidden sm:table-cell">ID</th>
+                    <th class="p-2 sm:p-3 md:p-6">Nombre</th>
+                    <th class="p-2 sm:p-3 md:p-6 hidden md:table-cell">Correo / ID</th>
+                    <th class="p-2 sm:p-3 md:p-6">Rol</th>
+                    <th class="p-2 sm:p-3 md:p-6 hidden sm:table-cell">Grado</th>
+                    <th class="p-2 sm:p-3 md:p-6 text-center">Acción</th>
                   </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-50">
@@ -1500,25 +1500,26 @@
                     :key="usuario.id"
                     class="hover:bg-blue-50/30 transition-all"
                   >
-                    <td class="p-6 font-bold text-gray-400">
+                    <td class="p-2 sm:p-3 md:p-6 font-bold text-gray-400 hidden sm:table-cell whitespace-nowrap">
                       #{{ usuario.id }}
                     </td>
-                    <td class="p-6 font-black text-blue-900">
-                      {{ usuario.nombre }}
+                    <td class="p-2 sm:p-3 md:p-6 font-black text-blue-900">
+                      <div class="leading-tight">{{ usuario.nombre }}</div>
+                      <div class="text-[10px] text-gray-400 font-normal md:hidden">{{ usuario.correo }}</div>
                     </td>
-                    <td class="p-6 font-medium text-gray-600">
+                    <td class="p-2 sm:p-3 md:p-6 font-medium text-gray-600 hidden md:table-cell">
                       {{ usuario.correo }}
                     </td>
-                    <td class="p-6">
+                    <td class="p-2 sm:p-3 md:p-6">
                       <span
-                        class="px-3 py-1 rounded-lg bg-blue-100 text-blue-600 font-black text-[10px] uppercase"
+                        class="px-2 py-1 rounded-lg bg-blue-100 text-blue-600 font-black text-[10px] uppercase whitespace-nowrap"
                         >{{ usuario.rol }}</span
                       >
                     </td>
-                    <td class="p-6 text-gray-500 font-bold">
+                    <td class="p-2 sm:p-3 md:p-6 text-gray-500 font-bold hidden sm:table-cell">
                       {{ usuario.grado || "N/A" }}
                     </td>
-                    <td class="p-6 text-center">
+                    <td class="p-2 sm:p-3 md:p-6 text-center">
                       <button
                         v-if="
                           usuario.rol === 'estudiante' &&
@@ -1563,9 +1564,9 @@
           class="max-w-2xl animate-slide-up"
         >
           <div
-            class="bg-white p-10 rounded-[3rem] shadow-sm border border-gray-100"
+            class="bg-white p-5 sm:p-7 md:p-10 rounded-[2rem] md:rounded-[3rem] shadow-sm border border-gray-100"
           >
-            <h2 class="text-2xl font-black text-blue-900 mb-6 uppercase">
+            <h2 class="text-xl md:text-2xl font-black text-blue-900 mb-4 md:mb-6 uppercase">
               Nuevo Reporte
             </h2>
             <div class="space-y-4">
@@ -1614,7 +1615,7 @@
               ></textarea>
               <button
                 @click="enviarReporte"
-                class="w-full bg-blue-600 text-white py-5 rounded-2xl font-black text-xl hover:bg-blue-700 shadow-lg transition-all"
+                class="w-full bg-blue-600 text-white py-4 md:py-5 rounded-2xl font-black text-base md:text-xl hover:bg-blue-700 shadow-lg transition-all"
               >
                 Enviar Reporte
               </button>
@@ -1708,7 +1709,7 @@
       <div
         class="bg-white w-full max-w-2xl rounded-[1.5rem] md:rounded-[2.5rem] p-5 sm:p-8 md:p-10 shadow-2xl animate-slide-up max-h-[90vh] overflow-y-auto"
       >
-        <h3 class="text-2xl font-black text-blue-900 mb-2 uppercase">
+        <h3 class="text-xl md:text-2xl font-black text-blue-900 mb-2 uppercase">
           Gestión de Intervención
         </h3>
         <div class="space-y-6 mt-4">
@@ -1779,23 +1780,23 @@
             </div>
           </div>
 
-          <div class="flex gap-4 pt-6">
+          <div class="flex flex-col sm:flex-row gap-3 pt-6">
             <button
               @click="mostrarModalSeguimiento = false"
-              class="flex-1 py-4 font-bold text-gray-400 hover:text-gray-600 uppercase text-xs"
+              class="flex-1 py-3 sm:py-4 font-bold text-gray-400 hover:text-gray-600 uppercase text-xs"
             >
               Cancelar
             </button>
             <button
               v-if="reporteSeleccionado?.estado === 'resuelto'"
               @click="descargarActa(reporteSeleccionado)"
-              class="flex-1 bg-gray-100 text-gray-600 py-4 px-4 rounded-2xl font-black hover:bg-gray-200 transition-all uppercase text-xs"
+              class="flex-1 bg-gray-100 text-gray-600 py-3 sm:py-4 px-4 rounded-2xl font-black hover:bg-gray-200 transition-all uppercase text-xs"
             >
               📄 Descargar Acta
             </button>
             <button
               @click="guardarYGenerarActa"
-              class="flex-2 bg-indigo-600 text-white py-4 px-8 rounded-2xl font-black hover:bg-indigo-700 shadow-xl transition-all uppercase text-xs"
+              class="flex-1 sm:flex-[2] bg-indigo-600 text-white py-3 sm:py-4 px-6 rounded-2xl font-black hover:bg-indigo-700 shadow-xl transition-all uppercase text-xs"
             >
               Guardar Gestión
             </button>
