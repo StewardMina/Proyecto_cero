@@ -1054,7 +1054,7 @@
           </div>
         </div>
 
-        <header class="flex justify-between items-center mb-6 md:mb-10">
+        <header v-if="subTab !== 'menu'" class="flex justify-between items-center mb-6 md:mb-10">
           <h1 class="text-xl md:text-3xl font-black text-blue-900 uppercase">
             Panel de Gestión
           </h1>
@@ -1068,9 +1068,6 @@
 
         <!-- MENÚ PRINCIPAL -->
         <section v-if="subTab === 'menu'" class="animate-fade-in">
-          <h2 class="text-xl md:text-2xl font-black text-blue-900 uppercase mb-6">
-            ¿Qué deseas hacer hoy?
-          </h2>
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
             <button
               @click="subTab = 'reportes'; obtenerReportes();"
