@@ -1054,10 +1054,17 @@
           </div>
         </div>
 
-        <header v-if="subTab !== 'menu'" class="flex justify-between items-center mb-6 md:mb-10">
-          <h1 class="text-xl md:text-3xl font-black text-blue-900 uppercase">
-            Panel de Gestión
-          </h1>
+        <header v-if="subTab !== 'menu' && subTab !== 'infoClasificacion' && subTab !== 'infoPanorama'" class="flex justify-between items-center mb-6 md:mb-10">
+          <div class="flex items-center gap-3">
+            <button
+              @click="subTab = 'menu'"
+              class="flex items-center gap-1 text-blue-500 hover:text-blue-700 font-bold text-sm transition-colors"
+            >← Menú</button>
+            <span class="text-gray-300">|</span>
+            <h1 class="text-xl md:text-3xl font-black text-blue-900 uppercase">
+              Panel de Gestión
+            </h1>
+          </div>
           <div class="flex items-center gap-4">
             <span
               class="text-[10px] md:text-xs font-black bg-blue-100 text-blue-600 px-3 md:px-4 py-1 md:py-2 rounded-full uppercase tracking-widest"
@@ -1067,49 +1074,152 @@
         </header>
 
         <!-- MENÚ PRINCIPAL -->
-        <section v-if="subTab === 'menu'" class="animate-fade-in">
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
-            <button
-              @click="subTab = 'reportes'; obtenerReportes();"
-              class="bg-white border-2 border-blue-100 hover:border-blue-400 rounded-[2rem] p-8 text-left flex items-start gap-5 shadow-sm hover:shadow-lg transition-all group"
-            >
-              <span class="text-5xl">📊</span>
-              <div>
-                <p class="text-lg font-black text-blue-900 group-hover:text-blue-600 transition-colors">Panel de Gestión</p>
-                <p class="text-sm text-gray-400 mt-1">Ver y gestionar todos los reportes de tu institución</p>
-              </div>
-            </button>
-            <button
-              @click="subTab = 'nuevoReporte'"
-              class="bg-white border-2 border-blue-100 hover:border-blue-400 rounded-[2rem] p-8 text-left flex items-start gap-5 shadow-sm hover:shadow-lg transition-all group"
-            >
-              <span class="text-5xl">📝</span>
-              <div>
-                <p class="text-lg font-black text-blue-900 group-hover:text-blue-600 transition-colors">Nuevo Reporte</p>
-                <p class="text-sm text-gray-400 mt-1">Registrar un nuevo caso o situación escolar</p>
-              </div>
-            </button>
-            <button
-              v-if="usuarioActivo?.rol === 'admin' || usuarioActivo?.rol === 'rector'"
-              @click="subTab = 'usuarios'; cargarUsuarios();"
-              class="bg-white border-2 border-blue-100 hover:border-blue-400 rounded-[2rem] p-8 text-left flex items-start gap-5 shadow-sm hover:shadow-lg transition-all group"
-            >
-              <span class="text-5xl">👥</span>
-              <div>
-                <p class="text-lg font-black text-blue-900 group-hover:text-blue-600 transition-colors">Gestión de Usuarios</p>
-                <p class="text-sm text-gray-400 mt-1">Administrar estudiantes y personal de la institución</p>
-              </div>
-            </button>
-            <button
-              @click="cerrarSesion"
-              class="bg-white border-2 border-red-100 hover:border-red-400 rounded-[2rem] p-8 text-left flex items-start gap-5 shadow-sm hover:shadow-lg transition-all group"
-            >
-              <span class="text-5xl">🚪</span>
-              <div>
-                <p class="text-lg font-black text-gray-700 group-hover:text-red-600 transition-colors">Cerrar Sesión</p>
-                <p class="text-sm text-gray-400 mt-1">Salir de tu cuenta de forma segura</p>
-              </div>
-            </button>
+        <section v-if="subTab === 'menu'" class="animate-fade-in space-y-6">
+          <!-- Acciones del sistema -->
+          <div>
+            <p class="text-xs font-black text-gray-400 uppercase tracking-widest mb-3 ml-1">Sistema</p>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <button
+                @click="subTab = 'reportes'; obtenerReportes();"
+                class="bg-white border-2 border-blue-100 hover:border-blue-400 rounded-[2rem] p-6 text-left flex items-start gap-4 shadow-sm hover:shadow-lg transition-all group"
+              >
+                <span class="text-4xl">📊</span>
+                <div>
+                  <p class="text-base font-black text-blue-900 group-hover:text-blue-600 transition-colors">Panel de Gestión</p>
+                  <p class="text-xs text-gray-400 mt-1">Ver y gestionar reportes de tu institución</p>
+                </div>
+              </button>
+              <button
+                @click="subTab = 'nuevoReporte'"
+                class="bg-white border-2 border-blue-100 hover:border-blue-400 rounded-[2rem] p-6 text-left flex items-start gap-4 shadow-sm hover:shadow-lg transition-all group"
+              >
+                <span class="text-4xl">📝</span>
+                <div>
+                  <p class="text-base font-black text-blue-900 group-hover:text-blue-600 transition-colors">Nuevo Reporte</p>
+                  <p class="text-xs text-gray-400 mt-1">Registrar un nuevo caso o situación escolar</p>
+                </div>
+              </button>
+              <button
+                v-if="usuarioActivo?.rol === 'admin' || usuarioActivo?.rol === 'rector'"
+                @click="subTab = 'usuarios'; cargarUsuarios();"
+                class="bg-white border-2 border-blue-100 hover:border-blue-400 rounded-[2rem] p-6 text-left flex items-start gap-4 shadow-sm hover:shadow-lg transition-all group"
+              >
+                <span class="text-4xl">👥</span>
+                <div>
+                  <p class="text-base font-black text-blue-900 group-hover:text-blue-600 transition-colors">Gestión de Usuarios</p>
+                  <p class="text-xs text-gray-400 mt-1">Administrar estudiantes y personal</p>
+                </div>
+              </button>
+            </div>
+          </div>
+
+          <!-- Información y recursos -->
+          <div>
+            <p class="text-xs font-black text-gray-400 uppercase tracking-widest mb-3 ml-1">Información y Recursos</p>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <a
+                href="/ley1620.html"
+                target="_blank"
+                class="bg-white border-2 border-indigo-100 hover:border-indigo-400 rounded-[2rem] p-6 text-left flex items-start gap-4 shadow-sm hover:shadow-lg transition-all group"
+              >
+                <span class="text-4xl">📋</span>
+                <div>
+                  <p class="text-base font-black text-indigo-900 group-hover:text-indigo-600 transition-colors">Ley 1620</p>
+                  <p class="text-xs text-gray-400 mt-1">Conoce la ley de convivencia escolar</p>
+                </div>
+              </a>
+              <button
+                @click="subTab = 'infoClasificacion'"
+                class="bg-white border-2 border-indigo-100 hover:border-indigo-400 rounded-[2rem] p-6 text-left flex items-start gap-4 shadow-sm hover:shadow-lg transition-all group"
+              >
+                <span class="text-4xl">🗂️</span>
+                <div>
+                  <p class="text-base font-black text-indigo-900 group-hover:text-indigo-600 transition-colors">Clasificación</p>
+                  <p class="text-xs text-gray-400 mt-1">Tipos de situaciones según la Ley 1620</p>
+                </div>
+              </button>
+              <button
+                @click="subTab = 'infoPanorama'"
+                class="bg-white border-2 border-indigo-100 hover:border-indigo-400 rounded-[2rem] p-6 text-left flex items-start gap-4 shadow-sm hover:shadow-lg transition-all group"
+              >
+                <span class="text-4xl">📈</span>
+                <div>
+                  <p class="text-base font-black text-indigo-900 group-hover:text-indigo-600 transition-colors">Panorama Nacional</p>
+                  <p class="text-xs text-gray-400 mt-1">Cifras de acoso escolar en Colombia</p>
+                </div>
+              </button>
+            </div>
+          </div>
+
+          <!-- Cerrar sesión -->
+          <button
+            @click="cerrarSesion"
+            class="w-full bg-white border-2 border-red-100 hover:border-red-400 rounded-[2rem] p-5 text-left flex items-center gap-4 shadow-sm hover:shadow-lg transition-all group"
+          >
+            <span class="text-3xl">🚪</span>
+            <div>
+              <p class="text-base font-black text-gray-700 group-hover:text-red-600 transition-colors">Cerrar Sesión</p>
+              <p class="text-xs text-gray-400">Salir de tu cuenta de forma segura</p>
+            </div>
+          </button>
+        </section>
+
+        <!-- INFO: CLASIFICACIÓN -->
+        <section v-if="subTab === 'infoClasificacion'" class="animate-fade-in space-y-6">
+          <button @click="subTab = 'menu'" class="flex items-center gap-2 text-blue-600 font-bold text-sm hover:text-blue-800 transition-colors mb-2">
+            ← Volver al menú
+          </button>
+          <h2 class="text-2xl font-black text-gray-900 uppercase tracking-tight">Clasificación de Situaciones</h2>
+          <p class="text-gray-500 text-sm">Sistema de categorización oficial según la Ley 1620 para una respuesta adecuada y proporcional.</p>
+          <div class="grid md:grid-cols-3 gap-6">
+            <div class="bg-gradient-to-br from-blue-50 to-blue-100 p-8 rounded-3xl border border-blue-200 shadow-md">
+              <div class="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-700 text-white rounded-2xl flex items-center justify-center text-2xl font-black mx-auto mb-4 shadow-lg">I</div>
+              <h3 class="text-xl font-black text-blue-800 text-center mb-3">Tipo I</h3>
+              <p class="text-blue-700 text-sm text-center leading-relaxed">Conflictos esporádicos o malentendidos entre estudiantes que no afectan de forma sistemática la integridad personal.</p>
+              <div class="mt-4 bg-blue-200 rounded-xl p-3 text-xs text-blue-800 font-bold text-center">Resolución: hasta 5 días hábiles</div>
+            </div>
+            <div class="bg-gradient-to-br from-yellow-50 to-yellow-100 p-8 rounded-3xl border border-yellow-200 shadow-md">
+              <div class="w-16 h-16 bg-gradient-to-br from-yellow-500 to-orange-500 text-white rounded-2xl flex items-center justify-center text-2xl font-black mx-auto mb-4 shadow-lg">II</div>
+              <h3 class="text-xl font-black text-yellow-800 text-center mb-3">Tipo II</h3>
+              <p class="text-yellow-700 text-sm text-center leading-relaxed">Acoso escolar o ciberacoso: agresiones repetitivas que dañan gravemente el bienestar del estudiante.</p>
+              <div class="mt-4 bg-yellow-200 rounded-xl p-3 text-xs text-yellow-800 font-bold text-center">Requiere intervención del Comité</div>
+            </div>
+            <div class="bg-gradient-to-br from-red-50 to-red-100 p-8 rounded-3xl border border-red-200 shadow-md">
+              <div class="w-16 h-16 bg-gradient-to-br from-red-500 to-red-700 text-white rounded-2xl flex items-center justify-center text-2xl font-black mx-auto mb-4 shadow-lg">III</div>
+              <h3 class="text-xl font-black text-red-800 text-center mb-3">Tipo III</h3>
+              <p class="text-red-700 text-sm text-center leading-relaxed">Situaciones que pueden constituir delitos contra la libertad, integridad o formación sexual.</p>
+              <div class="mt-4 bg-red-200 rounded-xl p-3 text-xs text-red-800 font-bold text-center">Requiere activación de autoridades</div>
+            </div>
+          </div>
+        </section>
+
+        <!-- INFO: PANORAMA NACIONAL -->
+        <section v-if="subTab === 'infoPanorama'" class="animate-fade-in space-y-6">
+          <button @click="subTab = 'menu'" class="flex items-center gap-2 text-blue-600 font-bold text-sm hover:text-blue-800 transition-colors mb-2">
+            ← Volver al menú
+          </button>
+          <h2 class="text-2xl font-black text-gray-900 uppercase tracking-tight">Panorama Nacional en Colombia</h2>
+          <p class="text-gray-500 text-sm">Porcentaje de estudiantes que manifiestan haber sido víctimas de agresiones (cifras aproximadas según Ley 1620).</p>
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div class="text-center p-6 bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl border border-blue-200">
+              <div class="text-4xl font-black text-blue-600 mb-1">32%</div>
+              <div class="text-sm font-bold text-gray-600 uppercase tracking-wide">Verbal</div>
+            </div>
+            <div class="text-center p-6 bg-gradient-to-br from-indigo-50 to-indigo-100 rounded-2xl border border-indigo-200">
+              <div class="text-4xl font-black text-indigo-600 mb-1">26%</div>
+              <div class="text-sm font-bold text-gray-600 uppercase tracking-wide">Físico</div>
+            </div>
+            <div class="text-center p-6 bg-gradient-to-br from-purple-50 to-purple-100 rounded-2xl border border-purple-200">
+              <div class="text-4xl font-black text-purple-600 mb-1">18%</div>
+              <div class="text-sm font-bold text-gray-600 uppercase tracking-wide">Ciberacoso</div>
+            </div>
+            <div class="text-center p-6 bg-gradient-to-br from-pink-50 to-pink-100 rounded-2xl border border-pink-200">
+              <div class="text-4xl font-black text-pink-600 mb-1">14%</div>
+              <div class="text-sm font-bold text-gray-600 uppercase tracking-wide">Exclusión</div>
+            </div>
+          </div>
+          <div class="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm">
+            <p class="text-sm text-gray-500 leading-relaxed">Según el Ministerio de Educación Nacional, Colombia registra altos índices de violencia escolar. La Ley 1620 de 2013 busca mitigar estas cifras a través de la gestión activa de los Comités de Convivencia Escolar en cada institución.</p>
           </div>
         </section>
 
@@ -2069,6 +2179,16 @@ export default {
       window.history.replaceState({}, document.title, window.location.pathname);
     }
 
+    // Interceptar botón atrás del navegador cuando hay sesión activa
+    window.history.pushState({ sistema: true }, "");
+    this._popstateHandler = () => {
+      if (this.ventana === "sistema") {
+        window.history.pushState({ sistema: true }, "");
+        this.subTab = "menu";
+      }
+    };
+    window.addEventListener("popstate", this._popstateHandler);
+
     const sesionGuardada = localStorage.getItem("usuarioProyecto");
     if (sesionGuardada && !token) {
       try {
@@ -2097,6 +2217,7 @@ export default {
 
   beforeUnmount() {
     window.removeEventListener("scroll", this.controlarScrollRef);
+    window.removeEventListener("popstate", this._popstateHandler);
   },
 
   methods: {
