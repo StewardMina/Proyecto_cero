@@ -1516,6 +1516,13 @@
               Cancelar
             </button>
             <button
+              v-if="reporteSeleccionado?.estado === 'resuelto'"
+              @click="descargarActa(reporteSeleccionado)"
+              class="flex-1 bg-gray-100 text-gray-600 py-4 px-4 rounded-2xl font-black hover:bg-gray-200 transition-all uppercase text-xs"
+            >
+              📄 Descargar Acta
+            </button>
+            <button
               @click="guardarYGenerarActa"
               class="flex-2 bg-indigo-600 text-white py-4 px-8 rounded-2xl font-black hover:bg-indigo-700 shadow-xl transition-all uppercase text-xs"
             >
