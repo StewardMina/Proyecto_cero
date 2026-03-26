@@ -2169,6 +2169,12 @@ export default {
           this.renderizarGrafica();
         });
       }
+      if (nuevaVentana === "login") {
+        this.formAuth = { correo: "", password: "" };
+        this.mensajeReset = "";
+        this.errorReset = false;
+        this.resetCorreo = "";
+      }
     },
     subTab(nuevoValor) {
       if (nuevoValor === "usuarios") {
