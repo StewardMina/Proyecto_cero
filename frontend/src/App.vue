@@ -944,21 +944,46 @@
                       #{{ reporte.id }}
                     </td>
                     <td class="p-6">
+                      <!-- Admin: botones para clasificar directamente -->
+                      <div v-if="usuarioActivo?.rol === 'admin'" class="flex flex-col gap-1">
+                        <div class="flex gap-1">
+                          <button
+                            @click="clasificarTipo(reporte, 'Tipo I')"
+                            :class="reporte.tipo === 'Tipo I' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-400 hover:bg-blue-100 hover:text-blue-600'"
+                            class="px-2 py-1 rounded-md font-black text-[9px] uppercase transition-all"
+                          >I</button>
+                          <button
+                            @click="clasificarTipo(reporte, 'Tipo II')"
+                            :class="reporte.tipo === 'Tipo II' ? 'bg-orange-500 text-white' : 'bg-gray-100 text-gray-400 hover:bg-orange-100 hover:text-orange-600'"
+                            class="px-2 py-1 rounded-md font-black text-[9px] uppercase transition-all"
+                          >II</button>
+                          <button
+                            @click="clasificarTipo(reporte, 'Tipo III')"
+                            :class="reporte.tipo === 'Tipo III' ? 'bg-red-600 text-white' : 'bg-gray-100 text-gray-400 hover:bg-red-100 hover:text-red-600'"
+                            class="px-2 py-1 rounded-md font-black text-[9px] uppercase transition-all"
+                          >III</button>
+                        </div>
+                        <span
+                          :class="{
+                            'text-red-600': reporte.tipo === 'Tipo III',
+                            'text-orange-500': reporte.tipo === 'Tipo II',
+                            'text-blue-600': reporte.tipo === 'Tipo I',
+                            'text-gray-400 animate-pulse': reporte.tipo === 'Por Clasificar',
+                          }"
+                          class="text-[9px] font-bold uppercase"
+                        >{{ reporte.tipo }}</span>
+                      </div>
+                      <!-- Rector/Estudiante: solo badge -->
                       <span
+                        v-else
                         :class="{
-                          'text-red-600 bg-red-50 border-red-100':
-                            reporte.tipo === 'Tipo III',
-                          'text-orange-600 bg-orange-50 border-orange-100':
-                            reporte.tipo === 'Tipo II',
-                          'text-blue-600 bg-blue-50 border-blue-100':
-                            reporte.tipo === 'Tipo I',
-                          'text-gray-500 bg-gray-100 border-gray-200 animate-pulse':
-                            reporte.tipo === 'Por Clasificar',
+                          'text-red-600 bg-red-50 border-red-100': reporte.tipo === 'Tipo III',
+                          'text-orange-600 bg-orange-50 border-orange-100': reporte.tipo === 'Tipo II',
+                          'text-blue-600 bg-blue-50 border-blue-100': reporte.tipo === 'Tipo I',
+                          'text-gray-500 bg-gray-100 border-gray-200 animate-pulse': reporte.tipo === 'Por Clasificar',
                         }"
                         class="px-3 py-1 rounded-lg border font-black uppercase text-[10px] tracking-tighter"
-                      >
-                        {{ reporte.tipo }}
-                      </span>
+                      >{{ reporte.tipo }}</span>
                     </td>
                     <td
                       v-if="
@@ -1441,48 +1466,6 @@
             </div>
           </div>
 
-          <!-- Solo el administrador puede categorizar el tipo de caso -->
-          <div v-if="usuarioActivo?.rol === 'admin'" class="space-y-3 pt-2 border-t border-gray-100">
-            <label
-              class="text-[10px] font-black text-indigo-600 uppercase tracking-widest"
-              >Categorizar Tipo de Acoso (Solo Admin)</label
-            >
-            <div class="grid grid-cols-3 gap-3">
-              <button
-                @click="reporteSeleccionado.tipo = 'Tipo I'"
-                :class="
-                  reporteSeleccionado.tipo === 'Tipo I'
-                    ? 'bg-blue-600 text-white shadow-lg'
-                    : 'bg-gray-100 text-gray-500'
-                "
-                class="p-3 rounded-2xl font-black uppercase text-xs transition-all leading-tight"
-              >
-                Tipo I<br/><span class="font-medium normal-case text-[9px]">Conflicto esporádico</span>
-              </button>
-              <button
-                @click="reporteSeleccionado.tipo = 'Tipo II'"
-                :class="
-                  reporteSeleccionado.tipo === 'Tipo II'
-                    ? 'bg-orange-500 text-white shadow-lg'
-                    : 'bg-gray-100 text-gray-500'
-                "
-                class="p-3 rounded-2xl font-black uppercase text-xs transition-all leading-tight"
-              >
-                Tipo II<br/><span class="font-medium normal-case text-[9px]">Acoso / Ciberacoso</span>
-              </button>
-              <button
-                @click="reporteSeleccionado.tipo = 'Tipo III'"
-                :class="
-                  reporteSeleccionado.tipo === 'Tipo III'
-                    ? 'bg-red-600 text-white shadow-lg'
-                    : 'bg-gray-100 text-gray-500'
-                "
-                class="p-3 rounded-2xl font-black uppercase text-xs transition-all leading-tight"
-              >
-                Tipo III<br/><span class="font-medium normal-case text-[9px]">Presunto delito</span>
-              </button>
-            </div>
-          </div>
 
           <div class="flex gap-4 pt-6">
             <button
@@ -2010,6 +1993,15 @@ export default {
         );
       } finally {
         this.cargando = false;
+      }
+    },
+
+    async clasificarTipo(reporte, tipo) {
+      try {
+        await api.put(`/reportes/${reporte.id}`, { tipo });
+        reporte.tipo = tipo;
+      } catch (error) {
+        alert("Error al clasificar el caso.");
       }
     },
 
