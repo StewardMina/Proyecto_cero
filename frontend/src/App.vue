@@ -534,6 +534,7 @@
                 ¿Necesitas implementar C.E.R.O en tu institución?
               </p>
               <button
+                @click="abrirContactar"
                 class="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-3 rounded-xl transition-all shadow-lg shadow-blue-900/20 uppercase text-xs"
               >
                 Contactar Asesor
@@ -1982,6 +1983,10 @@ export default {
       } finally {
         this.cargando = false;
       }
+    },
+
+    abrirContactar() {
+      window.open('/contactar.html', '_blank');
     },
 
     async clasificarTipo(reporte, tipo) {
