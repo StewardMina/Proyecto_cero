@@ -716,6 +716,11 @@
                 </svg>
               </span>
             </div>
+            <p class="text-xs text-gray-500 ml-2 mt-1">
+              ¿No tienes el código? Contáctate con los administradores de
+              <span class="font-bold text-blue-600">Proyecto C.E.R.O.</span>
+              para obtenerlo.
+            </p>
           </div>
 
           <button
