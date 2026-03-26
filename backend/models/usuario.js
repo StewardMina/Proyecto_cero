@@ -16,7 +16,9 @@ module.exports = (sequelize, DataTypes) => {
     grado: DataTypes.STRING,
     grupo: DataTypes.STRING,
     colegio_id: { type: DataTypes.INTEGER, references: { model: 'colegios', key: 'id' } },
-    must_change_password: { type: DataTypes.INTEGER, defaultValue: 0 }
+    must_change_password: { type: DataTypes.INTEGER, defaultValue: 0 },
+    reset_token: { type: DataTypes.STRING, allowNull: true },
+    reset_token_expires: { type: DataTypes.DATE, allowNull: true }
   }, {
     sequelize,
     modelName: 'Usuario',

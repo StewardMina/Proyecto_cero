@@ -3,6 +3,20 @@ const router = express.Router();
 const { Usuario, Colegio, Reporte } = require('../models');
 const bcrypt = require('bcrypt');
 const { Op } = require('sequelize');
+const crypto = require('crypto');
+const nodemailer = require('nodemailer');
+
+function crearTransporter() {
+    return nodemailer.createTransport({
+        host: process.env.EMAIL_HOST || 'smtp.gmail.com',
+        port: parseInt(process.env.EMAIL_PORT || '587'),
+        secure: false,
+        auth: {
+            user: process.env.EMAIL_USER,
+            pass: process.env.EMAIL_PASS
+        }
+    });
+}
 
 // Ruta para carga masiva de estudiantes
 router.post('/estudiantes/carga-masiva', async (req, res) => {
@@ -485,6 +499,87 @@ Responde siempre en español, de forma empática, clara y concisa. Máximo 3 pá
         console.error('Error chatbot IA, usando respuesta local:', error.message);
         const respuesta = respuestaLocal(mensaje);
         res.json({ success: true, respuesta });
+    }
+});
+
+// --- RESTAURAR CONTRASEÑA ---
+
+router.post('/auth/forgot-password', async (req, res) => {
+    try {
+        const { correo } = req.body;
+        if (!correo) return res.status(400).json({ success: false, message: "Ingresa tu correo." });
+
+        const usuario = await Usuario.findOne({ where: { correo: correo.toLowerCase().trim() } });
+        // Siempre responder igual para no revelar si el correo existe
+        if (!usuario) {
+            return res.json({ success: true, message: "Si el correo está registrado, recibirás un enlace." });
+        }
+
+        const token = crypto.randomBytes(32).toString('hex');
+        const expires = new Date(Date.now() + 60 * 60 * 1000); // 1 hora
+
+        await usuario.update({ reset_token: token, reset_token_expires: expires });
+
+        const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+        const resetLink = `${frontendUrl}?token=${token}`;
+
+        const transporter = crearTransporter();
+        await transporter.sendMail({
+            from: `"Proyecto C.E.R.O." <${process.env.EMAIL_USER}>`,
+            to: usuario.correo,
+            subject: 'Restaurar contraseña - Proyecto C.E.R.O.',
+            html: `
+                <div style="font-family:Arial,sans-serif;max-width:500px;margin:auto;padding:24px;border:1px solid #e5e7eb;border-radius:16px;">
+                    <h2 style="color:#1e3a8a;text-align:center;">Proyecto C.E.R.O.</h2>
+                    <p>Hola <strong>${usuario.nombre}</strong>,</p>
+                    <p>Recibimos una solicitud para restaurar tu contraseña. Haz clic en el botón para crear una nueva:</p>
+                    <div style="text-align:center;margin:32px 0;">
+                        <a href="${resetLink}" style="background:#2563eb;color:#fff;padding:14px 28px;border-radius:12px;text-decoration:none;font-weight:bold;">
+                            Restaurar contraseña
+                        </a>
+                    </div>
+                    <p style="color:#6b7280;font-size:12px;">Este enlace vence en 1 hora. Si no solicitaste esto, ignora este correo.</p>
+                </div>
+            `
+        });
+
+        res.json({ success: true, message: "Si el correo está registrado, recibirás un enlace." });
+    } catch (error) {
+        console.error("Error forgot-password:", error);
+        res.status(500).json({ success: false, message: "Error al enviar el correo. Intenta de nuevo." });
+    }
+});
+
+router.post('/auth/reset-password', async (req, res) => {
+    try {
+        const { token, nuevaPassword } = req.body;
+        if (!token || !nuevaPassword) {
+            return res.status(400).json({ success: false, message: "Datos incompletos." });
+        }
+
+        const usuario = await Usuario.findOne({
+            where: {
+                reset_token: token,
+                reset_token_expires: { [Op.gt]: new Date() }
+            }
+        });
+
+        if (!usuario) {
+            return res.status(400).json({ success: false, message: "El enlace no es válido o ya expiró." });
+        }
+
+        const hash = await bcrypt.hash(nuevaPassword, 10);
+        await usuario.update({
+            password: hash,
+            must_change_password: 0,
+            reset_token: null,
+            reset_token_expires: null
+        });
+
+        res.json({ success: true, message: "Contraseña actualizada correctamente. Ya puedes iniciar sesión." });
+    } catch (error) {
+        console.error("Error reset-password:", error);
+        res.status(500).json({ success: false, message: "Error interno del servidor." });
     }
 });
 

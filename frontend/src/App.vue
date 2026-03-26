@@ -615,12 +615,103 @@
             Ingresar
           </button>
           <button
+            @click="ventana = 'olvidoPassword'"
+            type="button"
+            class="w-full text-blue-400 hover:text-blue-600 font-bold text-xs transition-colors"
+          >
+            ¿Olvidaste tu contraseña?
+          </button>
+          <button
             @click="ventana = 'inicio'"
             type="button"
-            class="w-full mt-4 text-gray-400 font-bold text-xs uppercase"
+            class="w-full mt-2 text-gray-400 font-bold text-xs uppercase"
           >
             ← Volver
           </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- VENTANA OLVIDÉ MI CONTRASEÑA -->
+    <div
+      v-else-if="ventana === 'olvidoPassword'"
+      class="min-h-screen flex items-center justify-center p-4 bg-gray-100 form-section"
+    >
+      <div
+        class="bg-white p-6 sm:p-10 rounded-[2rem] shadow-xl w-full max-w-md border border-gray-100 text-center animate-fade-in"
+      >
+        <div class="text-5xl mb-4">🔑</div>
+        <h2 class="text-2xl font-black text-blue-900 mb-2 uppercase">Restaurar Contraseña</h2>
+        <p class="text-sm text-gray-500 mb-6">
+          Ingresa tu correo registrado y te enviaremos un enlace para crear una nueva contraseña.
+        </p>
+        <form @submit.prevent="solicitarResetPassword" class="space-y-4">
+          <input
+            v-model="resetCorreo"
+            type="email"
+            placeholder="Tu correo registrado"
+            class="w-full p-4 bg-gray-50 border-2 rounded-2xl font-bold outline-none focus:border-blue-600"
+            required
+          />
+          <button
+            type="submit"
+            :disabled="cargandoReset"
+            class="w-full bg-blue-600 text-white py-4 rounded-2xl font-black text-base hover:bg-blue-700 transition-all uppercase shadow-lg disabled:opacity-50"
+          >
+            {{ cargandoReset ? 'Enviando...' : 'Enviar enlace' }}
+          </button>
+          <p v-if="mensajeReset" class="text-sm font-bold" :class="errorReset ? 'text-red-500' : 'text-green-600'">
+            {{ mensajeReset }}
+          </p>
+          <button
+            @click="ventana = 'login'"
+            type="button"
+            class="w-full mt-2 text-gray-400 font-bold text-xs uppercase"
+          >
+            ← Volver al login
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- VENTANA NUEVA CONTRASEÑA (desde enlace del correo) -->
+    <div
+      v-else-if="ventana === 'resetPassword'"
+      class="min-h-screen flex items-center justify-center p-4 bg-gray-100 form-section"
+    >
+      <div
+        class="bg-white p-6 sm:p-10 rounded-[2rem] shadow-xl w-full max-w-md border border-gray-100 text-center animate-fade-in"
+      >
+        <div class="text-5xl mb-4">🔒</div>
+        <h2 class="text-2xl font-black text-blue-900 mb-2 uppercase">Nueva Contraseña</h2>
+        <p class="text-sm text-gray-500 mb-6">Elige una nueva contraseña segura para tu cuenta.</p>
+        <form @submit.prevent="confirmarResetPassword" class="space-y-4">
+          <input
+            v-model="resetNuevaPassword"
+            type="password"
+            placeholder="Nueva contraseña"
+            class="w-full p-4 bg-gray-50 border-2 rounded-2xl font-bold outline-none focus:border-blue-600"
+            required
+            minlength="6"
+          />
+          <input
+            v-model="resetConfirmarPassword"
+            type="password"
+            placeholder="Confirmar contraseña"
+            class="w-full p-4 bg-gray-50 border-2 rounded-2xl font-bold outline-none focus:border-blue-600"
+            required
+            minlength="6"
+          />
+          <button
+            type="submit"
+            :disabled="cargandoReset"
+            class="w-full bg-blue-600 text-white py-4 rounded-2xl font-black text-base hover:bg-blue-700 transition-all uppercase shadow-lg disabled:opacity-50"
+          >
+            {{ cargandoReset ? 'Guardando...' : 'Guardar nueva contraseña' }}
+          </button>
+          <p v-if="mensajeReset" class="text-sm font-bold" :class="errorReset ? 'text-red-500' : 'text-green-600'">
+            {{ mensajeReset }}
+          </p>
         </form>
       </div>
     </div>
@@ -1835,6 +1926,13 @@ export default {
         grupo: "",
       },
       formAuth: { correo: "", password: "" },
+      resetCorreo: "",
+      resetNuevaPassword: "",
+      resetConfirmarPassword: "",
+      resetToken: "",
+      cargandoReset: false,
+      mensajeReset: "",
+      errorReset: false,
       form: {
         tipo: "Tipo I",
         descripcion: "",
@@ -1904,6 +2002,14 @@ export default {
     this.controlarScrollRef = this.controlarScroll.bind(this);
     window.addEventListener("scroll", this.controlarScrollRef);
 
+    const params = new URLSearchParams(window.location.search);
+    const token = params.get("token");
+    if (token) {
+      this.resetToken = token;
+      this.ventana = "resetPassword";
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+
     localStorage.removeItem("usuarioProyecto");
     this.$nextTick(() => {
       this.renderizarGrafica();
@@ -1920,6 +2026,47 @@ export default {
   },
 
   methods: {
+    async solicitarResetPassword() {
+      this.cargandoReset = true;
+      this.mensajeReset = "";
+      this.errorReset = false;
+      try {
+        const res = await api.post("/auth/forgot-password", { correo: this.resetCorreo });
+        this.mensajeReset = res.data.message;
+        this.errorReset = false;
+      } catch (e) {
+        this.mensajeReset = e.response?.data?.message || "Error al enviar el correo.";
+        this.errorReset = true;
+      } finally {
+        this.cargandoReset = false;
+      }
+    },
+
+    async confirmarResetPassword() {
+      if (this.resetNuevaPassword !== this.resetConfirmarPassword) {
+        this.mensajeReset = "Las contraseñas no coinciden.";
+        this.errorReset = true;
+        return;
+      }
+      this.cargandoReset = true;
+      this.mensajeReset = "";
+      this.errorReset = false;
+      try {
+        const res = await api.post("/auth/reset-password", {
+          token: this.resetToken,
+          nuevaPassword: this.resetNuevaPassword
+        });
+        this.mensajeReset = res.data.message;
+        this.errorReset = false;
+        setTimeout(() => { this.ventana = "login"; }, 2500);
+      } catch (e) {
+        this.mensajeReset = e.response?.data?.message || "Error al actualizar la contraseña.";
+        this.errorReset = true;
+      } finally {
+        this.cargandoReset = false;
+      }
+    },
+
     async enviarDuda() {
       if (!this.mensajeChat || !this.mensajeChat.trim()) return;
 
