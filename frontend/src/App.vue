@@ -533,12 +533,12 @@
               <p class="text-xs text-gray-400 mb-4">
                 ¿Necesitas implementar C.E.R.O en tu institución?
               </p>
-              <button
-                @click="abrirContactar"
-                class="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-3 rounded-xl transition-all shadow-lg shadow-blue-900/20 uppercase text-xs"
+              <a
+                href="/contactar.html"
+                class="block w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-3 rounded-xl transition-all shadow-lg shadow-blue-900/20 uppercase text-xs text-center"
               >
                 Contactar Asesor
-              </button>
+              </a>
             </div>
           </div>
 
@@ -1983,10 +1983,6 @@ export default {
       } finally {
         this.cargando = false;
       }
-    },
-
-    abrirContactar() {
-      window.open('/contactar.html', '_blank');
     },
 
     async clasificarTipo(reporte, tipo) {
