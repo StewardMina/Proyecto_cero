@@ -2180,6 +2180,11 @@ export default {
       this.ventana = "resetPassword";
       window.history.replaceState({}, document.title, window.location.pathname);
     }
+    const ventanaParam = params.get("ventana");
+    if (ventanaParam === "login") {
+      this.ventana = "login";
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
 
     // Interceptar botón atrás del navegador cuando hay sesión activa
     window.history.pushState({ sistema: true }, "");
