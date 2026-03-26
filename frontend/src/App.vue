@@ -9,36 +9,37 @@
     >
       <nav
         id="inicio"
-        class="flex justify-between items-center p-6 max-w-7xl mx-auto shadow-soft bg-white/80 backdrop-blur-sm rounded-2xl m-4 nav-premium"
+        class="flex justify-between items-center p-3 md:p-6 max-w-7xl mx-auto shadow-soft bg-white/80 backdrop-blur-sm rounded-2xl m-3 md:m-4 nav-premium"
       >
-        <div class="flex items-center gap-3">
+        <div class="flex items-center gap-2 md:gap-3">
           <div
-            class="bg-gradient-to-br from-blue-600 to-blue-800 text-white p-3 rounded-xl font-black shadow-lg transform hover:scale-105 transition-all duration-300"
+            class="bg-gradient-to-br from-blue-600 to-blue-800 text-white p-2 md:p-3 rounded-xl font-black shadow-lg transform hover:scale-105 transition-all duration-300"
           >
             C
           </div>
-          <span class="text-2xl font-black text-blue-900 tracking-tighter"
+          <span class="text-base md:text-2xl font-black text-blue-900 tracking-tighter"
             >PROYECTO C.E.R.O.</span
           >
         </div>
-        <div class="flex gap-4">
+        <div class="flex gap-1 md:gap-4 items-center">
           <button
             @click="ventana = 'login'"
-            class="px-6 py-3 font-bold text-blue-600 hover:text-blue-800 transition-all duration-300 hover:bg-blue-50 rounded-xl"
+            class="px-3 md:px-6 py-2 md:py-3 text-sm md:text-base font-bold text-blue-600 hover:text-blue-800 transition-all duration-300 hover:bg-blue-50 rounded-xl"
           >
             Entrar
           </button>
           <button
             @click="ventana = 'contactar'"
-            class="px-6 py-3 font-bold text-blue-600 hover:text-blue-800 transition-all duration-300 hover:bg-blue-50 rounded-xl"
+            class="hidden sm:block px-3 md:px-6 py-2 md:py-3 text-sm md:text-base font-bold text-blue-600 hover:text-blue-800 transition-all duration-300 hover:bg-blue-50 rounded-xl"
           >
             Contáctanos
           </button>
           <button
             @click="ventana = 'registroColegio'"
-            class="bg-gradient-to-r from-blue-600 to-blue-800 text-white px-6 py-3 rounded-xl font-bold hover:from-blue-700 hover:to-blue-900 shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 btn-premium"
+            class="bg-gradient-to-r from-blue-600 to-blue-800 text-white px-3 md:px-6 py-2 md:py-3 text-xs md:text-base rounded-xl font-bold hover:from-blue-700 hover:to-blue-900 shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 btn-premium"
           >
-            Registrar Colegio
+            <span class="hidden sm:inline">Registrar Colegio</span>
+            <span class="sm:hidden">Registro</span>
           </button>
         </div>
       </nav>
@@ -70,7 +71,7 @@
         </transition-group>
       </div>
 
-      <header class="py-20 px-6 text-center max-w-5xl mx-auto animate-fade-in">
+      <header class="py-10 md:py-20 px-4 md:px-6 text-center max-w-5xl mx-auto animate-fade-in">
         <div class="mb-6">
           <span
             class="inline-block bg-blue-100 text-blue-800 px-4 py-2 rounded-full text-sm font-bold uppercase tracking-wider mb-4"
@@ -1200,22 +1201,22 @@
           </button>
           <h2 class="text-2xl font-black text-gray-900 uppercase tracking-tight">Panorama Nacional en Colombia</h2>
           <p class="text-gray-500 text-sm">Porcentaje de estudiantes que manifiestan haber sido víctimas de agresiones (cifras aproximadas según Ley 1620).</p>
-          <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div class="text-center p-6 bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl border border-blue-200">
-              <div class="text-4xl font-black text-blue-600 mb-1">32%</div>
-              <div class="text-sm font-bold text-gray-600 uppercase tracking-wide">Verbal</div>
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
+            <div class="text-center p-4 md:p-6 bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl border border-blue-200">
+              <div class="text-3xl md:text-4xl font-black text-blue-600 mb-1">32%</div>
+              <div class="text-xs md:text-sm font-bold text-gray-600 uppercase tracking-wide">Verbal</div>
             </div>
-            <div class="text-center p-6 bg-gradient-to-br from-indigo-50 to-indigo-100 rounded-2xl border border-indigo-200">
-              <div class="text-4xl font-black text-indigo-600 mb-1">26%</div>
-              <div class="text-sm font-bold text-gray-600 uppercase tracking-wide">Físico</div>
+            <div class="text-center p-4 md:p-6 bg-gradient-to-br from-indigo-50 to-indigo-100 rounded-2xl border border-indigo-200">
+              <div class="text-3xl md:text-4xl font-black text-indigo-600 mb-1">26%</div>
+              <div class="text-xs md:text-sm font-bold text-gray-600 uppercase tracking-wide">Físico</div>
             </div>
-            <div class="text-center p-6 bg-gradient-to-br from-purple-50 to-purple-100 rounded-2xl border border-purple-200">
-              <div class="text-4xl font-black text-purple-600 mb-1">18%</div>
-              <div class="text-sm font-bold text-gray-600 uppercase tracking-wide">Ciberacoso</div>
+            <div class="text-center p-4 md:p-6 bg-gradient-to-br from-purple-50 to-purple-100 rounded-2xl border border-purple-200">
+              <div class="text-3xl md:text-4xl font-black text-purple-600 mb-1">18%</div>
+              <div class="text-xs md:text-sm font-bold text-gray-600 uppercase tracking-wide">Ciberacoso</div>
             </div>
-            <div class="text-center p-6 bg-gradient-to-br from-pink-50 to-pink-100 rounded-2xl border border-pink-200">
-              <div class="text-4xl font-black text-pink-600 mb-1">14%</div>
-              <div class="text-sm font-bold text-gray-600 uppercase tracking-wide">Exclusión</div>
+            <div class="text-center p-4 md:p-6 bg-gradient-to-br from-pink-50 to-pink-100 rounded-2xl border border-pink-200">
+              <div class="text-3xl md:text-4xl font-black text-pink-600 mb-1">14%</div>
+              <div class="text-xs md:text-sm font-bold text-gray-600 uppercase tracking-wide">Exclusión</div>
             </div>
           </div>
           <div class="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm">
