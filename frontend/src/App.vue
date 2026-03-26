@@ -2010,7 +2010,22 @@ export default {
       window.history.replaceState({}, document.title, window.location.pathname);
     }
 
-    localStorage.removeItem("usuarioProyecto");
+    const sesionGuardada = localStorage.getItem("usuarioProyecto");
+    if (sesionGuardada && !token) {
+      try {
+        this.usuarioActivo = JSON.parse(sesionGuardada);
+        this.ventana = "sistema";
+        this.$nextTick(() => {
+          this.obtenerReportes();
+          if (this.usuarioActivo.rol === "admin" || this.usuarioActivo.rol === "rector") {
+            this.cargarUsuarios();
+          }
+        });
+      } catch (e) {
+        localStorage.removeItem("usuarioProyecto");
+      }
+    }
+
     this.$nextTick(() => {
       this.renderizarGrafica();
     });
