@@ -1647,16 +1647,17 @@
           />
           <input
             v-model="formUsuario.correo"
-            type="email"
-            placeholder="Correo electrónico o ID"
+            type="text"
+            placeholder="ID"
             class="w-full p-4 bg-gray-50 border-2 rounded-2xl font-bold outline-none focus:border-blue-600"
             required
           />
           <input
             v-model="formUsuario.correo_recuperacion"
             type="email"
-            placeholder="Correo para recuperar contraseña (opcional)"
+            placeholder="Correo para recuperar contraseña"
             class="w-full p-4 bg-gray-50 border-2 rounded-2xl font-bold outline-none focus:border-blue-600"
+            required
           />
           <input
             v-model="formUsuario.password"
