@@ -29,6 +29,12 @@
             Entrar
           </button>
           <button
+            @click="ventana = 'contactar'"
+            class="px-6 py-3 font-bold text-blue-600 hover:text-blue-800 transition-all duration-300 hover:bg-blue-50 rounded-xl"
+          >
+            Contáctanos
+          </button>
+          <button
             @click="ventana = 'registroColegio'"
             class="bg-gradient-to-r from-blue-600 to-blue-800 text-white px-6 py-3 rounded-xl font-bold hover:from-blue-700 hover:to-blue-900 shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 btn-premium"
           >
