@@ -561,7 +561,7 @@
 
         <button
           @click="volverArriba"
-          class="fixed bottom-8 right-8 bg-blue-600 text-white p-4 rounded-2xl shadow-2xl hover:bg-blue-700 transition-all z-50"
+          class="fixed bottom-4 right-4 md:bottom-8 md:right-8 bg-blue-600 text-white p-3 md:p-4 rounded-2xl shadow-2xl hover:bg-blue-700 transition-all z-50"
         >
           ↑
         </button>
@@ -587,29 +587,29 @@
       class="min-h-screen flex items-center justify-center p-4 bg-gray-100 form-section"
     >
       <div
-        class="bg-white p-12 rounded-[3rem] shadow-xl w-full max-w-md border border-gray-100 text-center animate-fade-in"
+        class="bg-white p-6 sm:p-10 md:p-12 rounded-[2rem] md:rounded-[3rem] shadow-xl w-full max-w-md border border-gray-100 text-center animate-fade-in"
       >
-        <h2 class="text-3xl font-black text-blue-900 mb-8 uppercase">
+        <h2 class="text-2xl md:text-3xl font-black text-blue-900 mb-6 md:mb-8 uppercase">
           Acceso C.E.R.O.
         </h2>
-        <form @submit.prevent="iniciarSesion" class="space-y-6">
+        <form @submit.prevent="iniciarSesion" class="space-y-4 md:space-y-6">
           <input
             v-model="formAuth.correo"
             type="text"
             placeholder="Correo o NIT"
-            class="w-full p-5 bg-gray-50 border-2 rounded-2xl font-bold outline-none focus:border-blue-600"
+            class="w-full p-4 bg-gray-50 border-2 rounded-2xl font-bold outline-none focus:border-blue-600"
             required
           />
           <input
             v-model="formAuth.password"
             type="password"
             placeholder="Contraseña"
-            class="w-full p-5 bg-gray-50 border-2 rounded-2xl font-bold outline-none focus:border-blue-600"
+            class="w-full p-4 bg-gray-50 border-2 rounded-2xl font-bold outline-none focus:border-blue-600"
             required
           />
           <button
             type="submit"
-            class="w-full bg-blue-600 text-white py-5 rounded-2xl font-black text-lg hover:bg-blue-700 transition-all uppercase shadow-lg"
+            class="w-full bg-blue-600 text-white py-4 rounded-2xl font-black text-base md:text-lg hover:bg-blue-700 transition-all uppercase shadow-lg"
           >
             Ingresar
           </button>
@@ -629,9 +629,9 @@
       class="min-h-screen flex items-center justify-center p-4 bg-blue-50 form-section"
     >
       <div
-        class="bg-white p-10 rounded-[3rem] shadow-xl w-full max-w-md border border-blue-100 text-center animate-fade-in"
+        class="bg-white p-6 sm:p-8 md:p-10 rounded-[2rem] md:rounded-[3rem] shadow-xl w-full max-w-md border border-blue-100 text-center animate-fade-in"
       >
-        <h2 class="text-3xl font-black text-blue-900 mb-2 uppercase">
+        <h2 class="text-2xl md:text-3xl font-black text-blue-900 mb-2 uppercase">
           Registro Institucional
         </h2>
         <p class="text-gray-500 mb-8 font-medium italic text-sm">
@@ -659,7 +659,7 @@
             class="w-full p-4 bg-gray-50 border-2 rounded-2xl font-bold outline-none focus:border-blue-600"
             required
           />
-          <div class="grid grid-cols-2 gap-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <input
               v-model="formColegio.ciudad"
               type="text"
@@ -796,8 +796,9 @@
       v-else-if="ventana === 'sistema'"
       class="min-h-screen bg-gray-50 flex animate-fade-in"
     >
+      <!-- Sidebar desktop -->
       <aside
-        class="w-64 bg-blue-900 text-white flex flex-col shadow-2xl shrink-0"
+        class="hidden md:flex w-64 bg-blue-900 text-white flex-col shadow-2xl shrink-0"
       >
         <div class="p-8 text-center border-b border-blue-800">
           <h2 class="text-2xl font-black tracking-tighter uppercase">
@@ -809,59 +810,63 @@
         </div>
         <nav class="flex-1 p-4 space-y-2 navigation-section">
           <button
-            @click="
-              subTab = 'reportes';
-              obtenerReportes();
-            "
-            :class="
-              subTab === 'reportes'
-                ? 'bg-blue-700 shadow-inner'
-                : 'hover:bg-blue-800'
-            "
+            @click="subTab = 'reportes'; obtenerReportes();"
+            :class="subTab === 'reportes' ? 'bg-blue-700 shadow-inner' : 'hover:bg-blue-800'"
             class="w-full flex items-center gap-3 p-4 rounded-xl font-bold transition-all"
-          >
-            📊 Mis Reportes
-          </button>
+          >📊 Mis Reportes</button>
           <button
             @click="subTab = 'nuevoReporte'"
-            :class="
-              subTab === 'nuevoReporte'
-                ? 'bg-blue-700 shadow-inner'
-                : 'hover:bg-blue-800'
-            "
+            :class="subTab === 'nuevoReporte' ? 'bg-blue-700 shadow-inner' : 'hover:bg-blue-800'"
             class="w-full flex items-center gap-3 p-4 rounded-xl font-bold transition-all"
-          >
-            📝 Nuevo Reporte
-          </button>
+          >📝 Nuevo Reporte</button>
           <button
-            v-if="
-              usuarioActivo?.rol === 'admin' || usuarioActivo?.rol === 'rector'
-            "
-            @click="
-              subTab = 'usuarios';
-              cargarUsuarios();
-            "
-            :class="
-              subTab === 'usuarios'
-                ? 'bg-blue-700 shadow-inner'
-                : 'hover:bg-blue-800'
-            "
+            v-if="usuarioActivo?.rol === 'admin' || usuarioActivo?.rol === 'rector'"
+            @click="subTab = 'usuarios'; cargarUsuarios();"
+            :class="subTab === 'usuarios' ? 'bg-blue-700 shadow-inner' : 'hover:bg-blue-800'"
             class="w-full flex items-center gap-3 p-4 rounded-xl font-bold transition-all"
-          >
-            👥 Usuarios
-          </button>
+          >👥 Usuarios</button>
         </nav>
         <div class="p-4 border-t border-blue-800">
           <button
             @click="cerrarSesion"
             class="w-full p-4 bg-red-500/10 hover:bg-red-500 text-red-500 hover:text-white rounded-xl font-bold transition-all flex items-center justify-center gap-2"
-          >
-            🚪 Salir
-          </button>
+          >🚪 Salir</button>
         </div>
       </aside>
 
-      <main class="flex-1 p-8 overflow-y-auto">
+      <!-- Navegación móvil (barra inferior) -->
+      <nav class="md:hidden fixed bottom-0 left-0 right-0 bg-blue-900 text-white z-50 flex border-t border-blue-800 shadow-2xl">
+        <button
+          @click="subTab = 'reportes'; obtenerReportes();"
+          :class="subTab === 'reportes' ? 'bg-blue-700' : ''"
+          class="flex-1 flex flex-col items-center justify-center py-3 gap-1 text-[10px] font-black uppercase transition-all"
+        >
+          <span class="text-lg">📊</span>Reportes
+        </button>
+        <button
+          @click="subTab = 'nuevoReporte'"
+          :class="subTab === 'nuevoReporte' ? 'bg-blue-700' : ''"
+          class="flex-1 flex flex-col items-center justify-center py-3 gap-1 text-[10px] font-black uppercase transition-all"
+        >
+          <span class="text-lg">📝</span>Nuevo
+        </button>
+        <button
+          v-if="usuarioActivo?.rol === 'admin' || usuarioActivo?.rol === 'rector'"
+          @click="subTab = 'usuarios'; cargarUsuarios();"
+          :class="subTab === 'usuarios' ? 'bg-blue-700' : ''"
+          class="flex-1 flex flex-col items-center justify-center py-3 gap-1 text-[10px] font-black uppercase transition-all"
+        >
+          <span class="text-lg">👥</span>Usuarios
+        </button>
+        <button
+          @click="cerrarSesion"
+          class="flex-1 flex flex-col items-center justify-center py-3 gap-1 text-[10px] font-black uppercase text-red-400 transition-all"
+        >
+          <span class="text-lg">🚪</span>Salir
+        </button>
+      </nav>
+
+      <main class="flex-1 p-4 md:p-8 overflow-y-auto pb-24 md:pb-8">
         <div
           class="mb-8 p-6 bg-gradient-to-r from-blue-600 to-indigo-700 rounded-[2rem] shadow-lg animate-fade-in relative overflow-hidden system-header"
         >
@@ -888,13 +893,13 @@
           </div>
         </div>
 
-        <header class="flex justify-between items-center mb-10">
-          <h1 class="text-3xl font-black text-blue-900 uppercase">
+        <header class="flex justify-between items-center mb-6 md:mb-10">
+          <h1 class="text-xl md:text-3xl font-black text-blue-900 uppercase">
             Panel de Gestión
           </h1>
           <div class="flex items-center gap-4">
             <span
-              class="text-xs font-black bg-blue-100 text-blue-600 px-4 py-2 rounded-full uppercase tracking-widest"
+              class="text-[10px] md:text-xs font-black bg-blue-100 text-blue-600 px-3 md:px-4 py-1 md:py-2 rounded-full uppercase tracking-widest"
               >{{ usuarioActivo?.rol }}</span
             >
           </div>
@@ -910,28 +915,18 @@
                   class="bg-gray-50 text-gray-400 text-xs uppercase font-black"
                 >
                   <tr>
-                    <th class="p-6">ID</th>
-                    <th class="p-6">Tipo</th>
+                    <th class="p-3 md:p-6">ID</th>
+                    <th class="p-3 md:p-6">Tipo</th>
                     <th
-                      v-if="
-                        usuarioActivo?.rol === 'admin' ||
-                        usuarioActivo?.rol === 'rector'
-                      "
-                      class="p-6"
-                    >
-                      Estudiante
-                    </th>
-                    <th class="p-6">Descripción</th>
-                    <th class="p-6">Estado</th>
+                      v-if="usuarioActivo?.rol === 'admin' || usuarioActivo?.rol === 'rector'"
+                      class="p-3 md:p-6"
+                    >Estudiante</th>
+                    <th class="p-3 md:p-6">Descripción</th>
+                    <th class="p-3 md:p-6">Estado</th>
                     <th
-                      v-if="
-                        usuarioActivo?.rol === 'admin' ||
-                        usuarioActivo?.rol === 'rector'
-                      "
-                      class="p-6 text-center"
-                    >
-                      Gestión
-                    </th>
+                      v-if="usuarioActivo?.rol === 'admin' || usuarioActivo?.rol === 'rector'"
+                      class="p-3 md:p-6 text-center"
+                    >Gestión</th>
                   </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-50">
@@ -986,23 +981,15 @@
                       >{{ reporte.tipo }}</span>
                     </td>
                     <td
-                      v-if="
-                        usuarioActivo?.rol === 'admin' ||
-                        usuarioActivo?.rol === 'rector'
-                      "
-                      class="p-6"
+                      v-if="usuarioActivo?.rol === 'admin' || usuarioActivo?.rol === 'rector'"
+                      class="p-3 md:p-6"
                     >
                       <div class="flex flex-col">
-                        <span
-                          class="font-black text-blue-900 text-sm uppercase"
-                          >{{ reporte.nombre_usuario || "Anónimo" }}</span
-                        >
-                        <span class="text-[10px] text-gray-400 font-bold italic"
-                          >Remitente</span
-                        >
+                        <span class="font-black text-blue-900 text-xs md:text-sm uppercase">{{ reporte.nombre_usuario || "Anónimo" }}</span>
+                        <span class="text-[10px] text-gray-400 font-bold italic">Remitente</span>
                       </div>
                     </td>
-                    <td class="p-6 text-gray-600 max-w-xs font-medium">
+                    <td class="p-3 md:p-6 text-gray-600 max-w-[120px] md:max-w-xs font-medium">
                       <div class="flex flex-col gap-1">
                         <span class="truncate block">{{ reporte.descripcion }}</span>
                         <span
@@ -1028,21 +1015,17 @@
                         </span>
                       </div>
                     </td>
-                    <td class="p-6">
+                    <td class="p-3 md:p-6">
                       <span
                         :class="{
-                          'bg-orange-100 text-orange-600':
-                            reporte.estado === 'nuevo',
-                          'bg-blue-100 text-blue-600':
-                            reporte.estado === 'revision',
-                          'bg-green-100 text-green-600':
-                            reporte.estado === 'resuelto',
+                          'bg-orange-100 text-orange-600': reporte.estado === 'nuevo',
+                          'bg-blue-100 text-blue-600': reporte.estado === 'revision',
+                          'bg-green-100 text-green-600': reporte.estado === 'resuelto',
                         }"
-                        class="px-3 py-1 rounded-full text-[10px] font-black uppercase italic"
-                        >{{ reporte.estado }}</span
-                      >
+                        class="px-2 py-1 rounded-full text-[10px] font-black uppercase italic whitespace-nowrap"
+                        >{{ reporte.estado }}</span>
                     </td>
-                    <td class="p-6 text-center">
+                    <td class="p-3 md:p-6 text-center">
                       <div class="flex justify-center gap-2">
                         <button
                           v-if="
@@ -1329,9 +1312,9 @@
       class="fixed inset-0 z-[120] flex items-center justify-center bg-blue-900/80 backdrop-blur-sm p-4"
     >
       <div
-        class="bg-white w-full max-w-md rounded-[2.5rem] p-10 shadow-2xl animate-slide-up"
+        class="bg-white w-full max-w-md rounded-[1.5rem] md:rounded-[2.5rem] p-5 sm:p-8 md:p-10 shadow-2xl animate-slide-up max-h-[90vh] overflow-y-auto"
       >
-        <h3 class="text-2xl font-black text-blue-900 mb-6 uppercase">
+        <h3 class="text-xl md:text-2xl font-black text-blue-900 mb-4 md:mb-6 uppercase">
           Registrar Usuario
         </h3>
         <form @submit.prevent="crearUsuario" class="space-y-4">
@@ -1365,7 +1348,7 @@
             <option value="admin">Administrador (TI)</option>
           </select>
 
-          <div v-if="formUsuario.rol === 'estudiante'" class="grid grid-cols-2 gap-4">
+          <div v-if="formUsuario.rol === 'estudiante'" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <input
               v-model="formUsuario.grado"
               type="text"
@@ -1405,7 +1388,7 @@
       class="fixed inset-0 z-[110] flex items-center justify-center bg-blue-900/80 backdrop-blur-sm p-4 modal-section"
     >
       <div
-        class="bg-white w-full max-w-2xl rounded-[2.5rem] p-10 shadow-2xl animate-slide-up max-h-[90vh] overflow-y-auto"
+        class="bg-white w-full max-w-2xl rounded-[1.5rem] md:rounded-[2.5rem] p-5 sm:p-8 md:p-10 shadow-2xl animate-slide-up max-h-[90vh] overflow-y-auto"
       >
         <h3 class="text-2xl font-black text-blue-900 mb-2 uppercase">
           Gestión de Intervención
@@ -1440,29 +1423,17 @@
               class="text-[10px] font-black text-gray-400 uppercase tracking-widest"
               >Cambiar Estado del Caso</label
             >
-            <div class="grid grid-cols-2 gap-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <button
                 @click="reporteSeleccionado.estado = 'revision'"
-                :class="
-                  reporteSeleccionado.estado === 'revision'
-                    ? 'bg-blue-600 text-white shadow-lg'
-                    : 'bg-gray-100 text-gray-400'
-                "
-                class="p-4 rounded-2xl font-black uppercase text-xs transition-all"
-              >
-                En Revisión
-              </button>
+                :class="reporteSeleccionado.estado === 'revision' ? 'bg-blue-600 text-white shadow-lg' : 'bg-gray-100 text-gray-400'"
+                class="p-3 md:p-4 rounded-2xl font-black uppercase text-xs transition-all"
+              >En Revisión</button>
               <button
                 @click="reporteSeleccionado.estado = 'resuelto'"
-                :class="
-                  reporteSeleccionado.estado === 'resuelto'
-                    ? 'bg-green-600 text-white shadow-lg'
-                    : 'bg-gray-100 text-gray-400'
-                "
-                class="p-4 rounded-2xl font-black uppercase text-xs transition-all"
-              >
-                Cerrar Caso
-              </button>
+                :class="reporteSeleccionado.estado === 'resuelto' ? 'bg-green-600 text-white shadow-lg' : 'bg-gray-100 text-gray-400'"
+                class="p-3 md:p-4 rounded-2xl font-black uppercase text-xs transition-all"
+              >Cerrar Caso</button>
             </div>
           </div>
 
@@ -1471,28 +1442,22 @@
             <label class="text-[10px] font-black text-indigo-600 uppercase tracking-widest">
               Tipo de Acoso
             </label>
-            <div class="grid grid-cols-3 gap-3">
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
               <button
                 @click="reporteSeleccionado.tipo = 'Tipo I'"
                 :class="reporteSeleccionado?.tipo === 'Tipo I' ? 'bg-blue-600 text-white shadow-lg' : 'bg-gray-100 text-gray-500 hover:bg-blue-50 hover:text-blue-600'"
                 class="p-3 rounded-2xl font-black uppercase text-xs transition-all text-center leading-tight"
-              >
-                Tipo I<br/><span class="font-medium normal-case text-[9px]">Conflicto esporádico</span>
-              </button>
+              >Tipo I · <span class="font-medium normal-case">Conflicto esporádico</span></button>
               <button
                 @click="reporteSeleccionado.tipo = 'Tipo II'"
                 :class="reporteSeleccionado?.tipo === 'Tipo II' ? 'bg-orange-500 text-white shadow-lg' : 'bg-gray-100 text-gray-500 hover:bg-orange-50 hover:text-orange-600'"
                 class="p-3 rounded-2xl font-black uppercase text-xs transition-all text-center leading-tight"
-              >
-                Tipo II<br/><span class="font-medium normal-case text-[9px]">Acoso / Ciberacoso</span>
-              </button>
+              >Tipo II · <span class="font-medium normal-case">Acoso / Ciberacoso</span></button>
               <button
                 @click="reporteSeleccionado.tipo = 'Tipo III'"
                 :class="reporteSeleccionado?.tipo === 'Tipo III' ? 'bg-red-600 text-white shadow-lg' : 'bg-gray-100 text-gray-500 hover:bg-red-50 hover:text-red-600'"
                 class="p-3 rounded-2xl font-black uppercase text-xs transition-all text-center leading-tight"
-              >
-                Tipo III<br/><span class="font-medium normal-case text-[9px]">Presunto delito</span>
-              </button>
+              >Tipo III · <span class="font-medium normal-case">Presunto delito</span></button>
             </div>
           </div>
 
@@ -1520,9 +1485,9 @@
       class="fixed inset-0 z-[120] flex items-center justify-center bg-blue-900/80 backdrop-blur-sm p-4"
     >
       <div
-        class="bg-white w-full max-w-lg rounded-[2.5rem] p-10 shadow-2xl animate-slide-up"
+        class="bg-white w-full max-w-lg rounded-[1.5rem] md:rounded-[2.5rem] p-5 sm:p-8 md:p-10 shadow-2xl animate-slide-up"
       >
-        <h3 class="text-2xl font-black text-blue-900 mb-2 uppercase">
+        <h3 class="text-xl md:text-2xl font-black text-blue-900 mb-2 uppercase">
           Corregir Reporte
         </h3>
         <p class="text-xs text-gray-400 mb-6 font-bold italic">
@@ -1610,7 +1575,7 @@
     <button
       @click="mostrarChatbot = !mostrarChatbot"
       type="button"
-      class="fixed bottom-24 right-8 bg-blue-900 text-white p-4 rounded-full shadow-2xl z-[100] hover:scale-110 active:scale-95 transition-all cursor-pointer"
+      class="fixed bottom-20 right-4 md:bottom-24 md:right-8 bg-blue-900 text-white p-3 md:p-4 rounded-full shadow-2xl z-[100] hover:scale-110 active:scale-95 transition-all cursor-pointer"
     >
       <svg
         v-if="!mostrarChatbot"
@@ -1647,7 +1612,7 @@
     <button
       v-if="mostrarBotonArriba"
       @click="volverArriba"
-      class="fixed bottom-8 right-8 bg-blue-600 text-white p-4 rounded-2xl shadow-2xl hover:bg-blue-700 transition-all z-50"
+      class="fixed bottom-4 right-4 md:bottom-8 md:right-8 bg-blue-600 text-white p-3 md:p-4 rounded-2xl shadow-2xl hover:bg-blue-700 transition-all z-50"
     >
       ↑
     </button>
@@ -1655,7 +1620,7 @@
     <!-- VENTANA CHATBOT -->
     <div
       v-show="mostrarChatbot"
-      class="fixed bottom-40 right-8 w-80 bg-white shadow-2xl rounded-3xl overflow-hidden z-50 border border-gray-100 flex flex-col animate-fade-in"
+      class="fixed bottom-16 right-2 w-[calc(100vw-1rem)] max-w-sm md:bottom-40 md:right-8 md:w-80 bg-white shadow-2xl rounded-3xl overflow-hidden z-50 border border-gray-100 flex flex-col animate-fade-in"
     >
       <div class="bg-blue-900 p-4 text-white">
         <h3 class="font-black text-sm uppercase tracking-tighter">
