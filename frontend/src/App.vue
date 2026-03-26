@@ -977,8 +977,31 @@
                         >
                       </div>
                     </td>
-                    <td class="p-6 text-gray-600 max-w-xs truncate font-medium">
-                      {{ reporte.descripcion }}
+                    <td class="p-6 text-gray-600 max-w-xs font-medium">
+                      <div class="flex flex-col gap-1">
+                        <span class="truncate block">{{ reporte.descripcion }}</span>
+                        <span
+                          v-if="reporte.tipo && reporte.tipo !== 'Por Clasificar'"
+                          :class="{
+                            'text-blue-600 bg-blue-50': reporte.tipo === 'Tipo I',
+                            'text-orange-600 bg-orange-50': reporte.tipo === 'Tipo II',
+                            'text-red-600 bg-red-50': reporte.tipo === 'Tipo III',
+                          }"
+                          class="text-[9px] font-black uppercase px-2 py-0.5 rounded-md w-fit"
+                        >
+                          {{
+                            reporte.tipo === 'Tipo I' ? 'Tipo I · Conflicto esporádico' :
+                            reporte.tipo === 'Tipo II' ? 'Tipo II · Acoso / Ciberacoso' :
+                            reporte.tipo === 'Tipo III' ? 'Tipo III · Presunto Delito' : reporte.tipo
+                          }}
+                        </span>
+                        <span
+                          v-else-if="reporte.tipo === 'Por Clasificar'"
+                          class="text-[9px] font-black uppercase px-2 py-0.5 rounded-md w-fit text-gray-400 bg-gray-100 animate-pulse"
+                        >
+                          Por Clasificar
+                        </span>
+                      </div>
                     </td>
                     <td class="p-6">
                       <span
@@ -1414,6 +1437,49 @@
                 class="p-4 rounded-2xl font-black uppercase text-xs transition-all"
               >
                 Cerrar Caso
+              </button>
+            </div>
+          </div>
+
+          <!-- Solo el administrador puede categorizar el tipo de caso -->
+          <div v-if="usuarioActivo?.rol === 'admin'" class="space-y-3 pt-2 border-t border-gray-100">
+            <label
+              class="text-[10px] font-black text-indigo-600 uppercase tracking-widest"
+              >Categorizar Tipo de Acoso (Solo Admin)</label
+            >
+            <div class="grid grid-cols-3 gap-3">
+              <button
+                @click="reporteSeleccionado.tipo = 'Tipo I'"
+                :class="
+                  reporteSeleccionado.tipo === 'Tipo I'
+                    ? 'bg-blue-600 text-white shadow-lg'
+                    : 'bg-gray-100 text-gray-500'
+                "
+                class="p-3 rounded-2xl font-black uppercase text-xs transition-all leading-tight"
+              >
+                Tipo I<br/><span class="font-medium normal-case text-[9px]">Conflicto esporádico</span>
+              </button>
+              <button
+                @click="reporteSeleccionado.tipo = 'Tipo II'"
+                :class="
+                  reporteSeleccionado.tipo === 'Tipo II'
+                    ? 'bg-orange-500 text-white shadow-lg'
+                    : 'bg-gray-100 text-gray-500'
+                "
+                class="p-3 rounded-2xl font-black uppercase text-xs transition-all leading-tight"
+              >
+                Tipo II<br/><span class="font-medium normal-case text-[9px]">Acoso / Ciberacoso</span>
+              </button>
+              <button
+                @click="reporteSeleccionado.tipo = 'Tipo III'"
+                :class="
+                  reporteSeleccionado.tipo === 'Tipo III'
+                    ? 'bg-red-600 text-white shadow-lg'
+                    : 'bg-gray-100 text-gray-500'
+                "
+                class="p-3 rounded-2xl font-black uppercase text-xs transition-all leading-tight"
+              >
+                Tipo III<br/><span class="font-medium normal-case text-[9px]">Presunto delito</span>
               </button>
             </div>
           </div>
