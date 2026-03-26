@@ -2020,18 +2020,22 @@ export default {
     },
 
     async guardarYGenerarActa() {
-      if (!this.nuevaIntervencion.trim()) {
+      const tieneNota = this.nuevaIntervencion.trim().length > 0;
+      const tipoValido = ['Tipo I', 'Tipo II', 'Tipo III'].includes(this.reporteSeleccionado.tipo);
+
+      if (!tieneNota && !tipoValido) {
         alert(
-          "Por favor, describe las acciones o compromisos antes de guardar.",
+          "Por favor, describe las acciones o compromisos, o clasifica el tipo de caso antes de guardar.",
         );
         return;
       }
       try {
         this.cargando = true;
         const fechaActual = new Date().toLocaleDateString();
-        const seguimientoActualizado =
-          (this.reporteSeleccionado.seguimiento || "") +
-          `\n\n[${fechaActual}]: ${this.nuevaIntervencion}`;
+        const seguimientoActualizado = tieneNota
+          ? (this.reporteSeleccionado.seguimiento || "") +
+            `\n\n[${fechaActual}]: ${this.nuevaIntervencion}`
+          : this.reporteSeleccionado.seguimiento || "";
 
         await api.put(`/reportes/${this.reporteSeleccionado.id}`, {
           seguimiento: seguimientoActualizado,
