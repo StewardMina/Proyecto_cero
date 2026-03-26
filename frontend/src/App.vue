@@ -1829,16 +1829,10 @@ export default {
     this.controlarScrollRef = this.controlarScroll.bind(this);
     window.addEventListener("scroll", this.controlarScrollRef);
 
-    const guardado = localStorage.getItem("usuarioProyecto");
-    if (guardado) {
-      this.usuarioActivo = JSON.parse(guardado);
-      this.ventana = "sistema";
-      this.obtenerReportes();
-    } else {
-      this.$nextTick(() => {
-        this.renderizarGrafica();
-      });
-    }
+    localStorage.removeItem("usuarioProyecto");
+    this.$nextTick(() => {
+      this.renderizarGrafica();
+    });
 
     setInterval(() => {
       this.indiceCarrusel =
