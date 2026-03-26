@@ -7,10 +7,11 @@ const crypto = require('crypto');
 const nodemailer = require('nodemailer');
 
 function crearTransporter() {
+    const port = parseInt(process.env.EMAIL_PORT || '587');
     return nodemailer.createTransport({
         host: process.env.EMAIL_HOST || 'smtp.gmail.com',
-        port: parseInt(process.env.EMAIL_PORT || '465'),
-        secure: true,
+        port,
+        secure: port === 465,
         auth: {
             user: process.env.EMAIL_USER,
             pass: process.env.EMAIL_PASS
@@ -515,14 +516,20 @@ router.post('/auth/forgot-password', async (req, res) => {
         if (!correo) return res.status(400).json({ success: false, message: "Ingresa tu correo." });
 
         const correoNorm = correo.toLowerCase().trim();
-        const usuario = await Usuario.findOne({
-            where: {
-                [Op.or]: [
-                    { correo: correoNorm },
-                    { correo_recuperacion: correoNorm }
-                ]
-            }
-        });
+        let usuario;
+        try {
+            usuario = await Usuario.findOne({
+                where: {
+                    [Op.or]: [
+                        { correo: correoNorm },
+                        { correo_recuperacion: correoNorm }
+                    ]
+                }
+            });
+        } catch (dbErr) {
+            // Si correo_recuperacion no existe aún en la BD, buscar solo por correo
+            usuario = await Usuario.findOne({ where: { correo: correoNorm } });
+        }
         // Siempre responder igual para no revelar si el correo existe
         if (!usuario) {
             return res.json({ success: true, message: "Si el correo está registrado, recibirás un enlace." });
