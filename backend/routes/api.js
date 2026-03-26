@@ -340,10 +340,74 @@ router.delete('/usuarios/:id', async (req, res) => {
     }
 });
 
+// ─── BASE DE CONOCIMIENTO LOCAL ───────────────────────────────────────────────
+function respuestaLocal(mensaje) {
+    const c = mensaje.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+
+    if (/hola|buenos|buenas|saludos/.test(c))
+        return '¡Hola! Soy el asistente de C.E.R.O. Puedo ayudarte con información sobre acoso escolar, Ley 1620, cómo reportar casos y más. ¿En qué puedo ayudarte?';
+
+    if (/ley 1620|ley1620/.test(c))
+        return 'La Ley 1620 de 2013 crea el Sistema Nacional de Convivencia Escolar en Colombia. Establece el Comité de Convivencia en cada institución y define tres tipos de situaciones: Tipo I (conflictos esporádicos), Tipo II (acoso sistemático/ciberacoso) y Tipo III (presuntos delitos). Su objetivo es proteger a estudiantes y garantizar ambientes escolares seguros.';
+
+    if (/tipo i|tipo 1|conflicto esporadico/.test(c))
+        return 'La Situación Tipo I corresponde a conflictos esporádicos o malentendidos entre estudiantes que no afectan de forma sistemática la integridad. Se resuelven mediante diálogo, mediación y compromisos entre las partes. El colegio debe dar respuesta en máximo 5 días hábiles.';
+
+    if (/tipo ii|tipo 2|acoso|bullying|ciberacoso|hostigamiento/.test(c))
+        return 'La Situación Tipo II es acoso escolar (bullying) o ciberacoso: agresiones repetitivas que dañan gravemente el bienestar del estudiante. Incluye burlas sistemáticas, exclusión social, amenazas y hostigamiento en redes. Requiere intervención del Comité de Convivencia y seguimiento obligatorio.';
+
+    if (/tipo iii|tipo 3|delito|agresion grave|abuso|extorsion/.test(c))
+        return 'La Situación Tipo III involucra hechos que por su gravedad constituyen presuntos delitos: agresión física grave, abuso sexual, extorsión, porte de armas. Requiere intervención inmediata de autoridades como el ICBF, Policía de Infancia y Adolescencia o la Fiscalía, además del protocolo escolar.';
+
+    if (/reportar|reporte|denunciar|como report/.test(c))
+        return 'Para reportar un caso en C.E.R.O.: inicia sesión con tu usuario, ve al panel y haz clic en "Nuevo Reporte". Describe los hechos con detalle, indica la ubicación y puedes hacerlo de forma anónima. El Comité de Convivencia revisará tu reporte y realizará el seguimiento correspondiente.';
+
+    if (/anonimo|anonimato|identidad|privacidad/.test(c))
+        return 'Sí, los reportes pueden ser totalmente anónimos. Tu identidad estará protegida y solo el administrador y rector podrán gestionar los casos. Reportar de forma anónima es válido y tiene el mismo peso que un reporte con nombre.';
+
+    if (/señales|señal|como saber|identificar|victima/.test(c))
+        return 'Señales de alerta en víctimas de acoso: rechazo repentino a ir al colegio, cambios de humor o tristeza constante, bajo rendimiento académico, pérdida frecuente de objetos, heridas sin explicación, aislamiento de amigos y familia, o cambios en el uso del celular. Si notas estas señales, actúa con empatía y orienta a la persona a pedir ayuda.';
+
+    if (/verbal/.test(c))
+        return 'El acoso verbal incluye insultos, apodos ofensivos, burlas sistemáticas, amenazas y humillaciones repetidas. Aunque no deja marcas físicas, causa daño emocional grave. Si lo estás viviendo, guarda evidencias, cuéntaselo a un adulto de confianza y repórtalo en C.E.R.O.';
+
+    if (/fisico|golpe|empujon|daño|danar/.test(c))
+        return 'El acoso físico incluye golpes, empujones, daño intencional a objetos personales o cualquier contacto físico no deseado. Es una Situación Tipo II o III según la gravedad. Debes reportarlo de inmediato al colegio y, si hay lesiones, buscar atención médica y notificar a tus padres o acudientes.';
+
+    if (/cibera|redes|internet|whatsapp|instagram|tiktok|foto|video/.test(c))
+        return 'El ciberacoso es el hostigamiento a través de medios digitales: mensajes ofensivos, difusión de fotos/videos sin consentimiento, exclusión de grupos, suplantación de identidad. Es Situación Tipo II. Guarda capturas de pantalla como evidencia, bloquea al agresor y repórtalo en C.E.R.O. y a la plataforma digital.';
+
+    if (/icbf|linea|emergencia|ayuda|numero|telefono/.test(c))
+        return 'Líneas de ayuda disponibles:\n• ICBF: 018000 918080 (gratuita, 24/7)\n• Línea 106: salud mental para niños y adolescentes (gratuita)\n• Policía Nacional: 123\n• Defensoría del Pueblo: 01800 914814\nNo dudes en llamar si tú o alguien que conoces está en riesgo.';
+
+    if (/comite|convivencia|quienes|quien resuelve/.test(c))
+        return 'El Comité de Convivencia Escolar es el órgano institucional encargado de gestionar los conflictos según la Ley 1620. Está conformado por el rector, el personero estudiantil, docentes y padres de familia. Su función es prevenir, atender y hacer seguimiento a los casos de convivencia reportados.';
+
+    if (/padres|familia|acudiente|que hacer como padre/.test(c))
+        return 'Si eres padre o acudiente y sospechas que tu hijo/a sufre acoso: escúchalo sin juzgar, visita el colegio y habla con el director de grupo o rector, solicita una reunión con el Comité de Convivencia y, si es necesario, acude al ICBF. Mantén comunicación abierta en casa y refuerza su autoestima.';
+
+    if (/docente|profesor|maestro|que hacer como profe/.test(c))
+        return 'Como docente, si detectas acoso escolar debes: documentar los hechos observados, informar al rector y al Comité de Convivencia, intervenir para separar a las partes, nunca minimizar la situación, y hacer seguimiento al estudiante afectado. La Ley 1620 establece que los docentes son corresponsables de la convivencia escolar.';
+
+    if (/cero|plataforma|sistema|app/.test(c))
+        return 'C.E.R.O. (Convivencia Escolar con Respeto y Orden) es una plataforma digital que permite reportar, gestionar y hacer seguimiento a casos de convivencia escolar según la Ley 1620. Estudiantes reportan casos (anónimos o no), y el Comité de Convivencia los gestiona clasificándolos en Tipo I, II o III según su gravedad.';
+
+    if (/gracias|listo|ok|perfecto|entendi/.test(c))
+        return 'Con gusto. Recuerda que ante cualquier situación de acoso o malestar, no estás solo/a. Puedes usar C.E.R.O. para reportar o llamar a la línea 106. ¡Cuídate mucho!';
+
+    return 'No tengo información específica sobre eso, pero puedo ayudarte con temas como: acoso escolar, Ley 1620, tipos de situaciones (I, II, III), cómo reportar, ciberacoso, señales de alerta o líneas de ayuda. ¿Sobre cuál de estos temas tienes dudas?';
+}
+
 // ─── CHATBOT IA ───────────────────────────────────────────────────────────────
 router.post('/chatbot', async (req, res) => {
     const { mensaje, historial } = req.body;
     if (!mensaje) return res.status(400).json({ success: false, message: 'Mensaje vacío.' });
+
+    // Sin API key → base de conocimiento local
+    if (!process.env.ANTHROPIC_API_KEY) {
+        const respuesta = respuestaLocal(mensaje);
+        return res.json({ success: true, respuesta });
+    }
 
     try {
         const Anthropic = require('@anthropic-ai/sdk');
@@ -418,8 +482,9 @@ Responde siempre en español, de forma empática, clara y concisa. Máximo 3 pá
 
         res.json({ success: true, respuesta: response.content[0].text });
     } catch (error) {
-        console.error('Error chatbot:', error.message);
-        res.status(500).json({ success: false, message: 'Error al procesar tu pregunta.' });
+        console.error('Error chatbot IA, usando respuesta local:', error.message);
+        const respuesta = respuestaLocal(mensaje);
+        res.json({ success: true, respuesta });
     }
 });
 
