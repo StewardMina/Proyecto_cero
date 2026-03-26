@@ -1653,6 +1653,12 @@
             required
           />
           <input
+            v-model="formUsuario.correo_recuperacion"
+            type="email"
+            placeholder="Correo para recuperar contraseña (opcional)"
+            class="w-full p-4 bg-gray-50 border-2 rounded-2xl font-bold outline-none focus:border-blue-600"
+          />
+          <input
             v-model="formUsuario.password"
             type="password"
             placeholder="Contraseña temporal"
@@ -2091,6 +2097,7 @@ export default {
       formUsuario: {
         nombre: "",
         correo: "",
+        correo_recuperacion: "",
         password: "",
         rol: "estudiante",
         grado: "",
@@ -2618,6 +2625,7 @@ export default {
           this.formUsuario = {
             nombre: "",
             correo: "",
+            correo_recuperacion: "",
             password: "",
             rol: "estudiante",
             grado: "",

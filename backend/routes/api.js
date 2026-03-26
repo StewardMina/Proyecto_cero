@@ -217,8 +217,8 @@ router.put('/reportes/:id', async (req, res) => {
 // --- GESTIÓN DE USUARIOS ---
 
 router.post('/usuarios', async (req, res) => {
-    const { nombre, correo, password, rol, grado, grupo, colegio_id } = req.body;
-    
+    const { nombre, correo, password, rol, grado, grupo, colegio_id, correo_recuperacion } = req.body;
+
     if (!nombre || !correo || !password || !rol || !colegio_id) {
         return res.status(400).json({ success: false, message: "Faltan datos obligatorios." });
     }
@@ -235,7 +235,8 @@ router.post('/usuarios', async (req, res) => {
             grado: grado || null,
             grupo: grupo || null,
             colegio_id,
-            must_change_password: 1
+            must_change_password: 1,
+            correo_recuperacion: correo_recuperacion ? correo_recuperacion.toLowerCase().trim() : null
         });
 
         res.json({ 
@@ -509,7 +510,15 @@ router.post('/auth/forgot-password', async (req, res) => {
         const { correo } = req.body;
         if (!correo) return res.status(400).json({ success: false, message: "Ingresa tu correo." });
 
-        const usuario = await Usuario.findOne({ where: { correo: correo.toLowerCase().trim() } });
+        const correoNorm = correo.toLowerCase().trim();
+        const usuario = await Usuario.findOne({
+            where: {
+                [Op.or]: [
+                    { correo: correoNorm },
+                    { correo_recuperacion: correoNorm }
+                ]
+            }
+        });
         // Siempre responder igual para no revelar si el correo existe
         if (!usuario) {
             return res.json({ success: true, message: "Si el correo está registrado, recibirás un enlace." });
@@ -524,9 +533,10 @@ router.post('/auth/forgot-password', async (req, res) => {
         const resetLink = `${frontendUrl}?token=${token}`;
 
         const transporter = crearTransporter();
+        const destinatario = usuario.correo_recuperacion || usuario.correo;
         await transporter.sendMail({
             from: `"Proyecto C.E.R.O." <${process.env.EMAIL_USER}>`,
-            to: usuario.correo,
+            to: destinatario,
             subject: 'Restaurar contraseña - Proyecto C.E.R.O.',
             html: `
                 <div style="font-family:Arial,sans-serif;max-width:500px;margin:auto;padding:24px;border:1px solid #e5e7eb;border-radius:16px;">
