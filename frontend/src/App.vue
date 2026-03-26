@@ -291,6 +291,7 @@
       </section>
 
       <section
+        id="ruta-atencion"
         class="py-24 bg-gradient-to-br from-blue-900 via-blue-800 to-indigo-900 text-white px-6 rounded-3xl mx-4 my-16 shadow-2xl relative overflow-hidden"
       >
         <div
@@ -474,7 +475,7 @@
                 </li>
                 <li>
                   <a
-                    href="#"
+                    href="#ruta-atencion"
                     class="hover:text-white hover:translate-x-1 transition-all inline-block"
                     >Ruta de Atención</a
                   >
