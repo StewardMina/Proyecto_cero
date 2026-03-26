@@ -533,12 +533,12 @@
               <p class="text-xs text-gray-400 mb-4">
                 ¿Necesitas implementar C.E.R.O en tu institución?
               </p>
-              <a
-                href="/contactar.html"
-                class="block w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-3 rounded-xl transition-all shadow-lg shadow-blue-900/20 uppercase text-xs text-center"
+              <button
+                @click="ventana = 'contactar'"
+                class="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-3 rounded-xl transition-all shadow-lg shadow-blue-900/20 uppercase text-xs"
               >
                 Contactar Asesor
-              </a>
+              </button>
             </div>
           </div>
 
@@ -790,6 +790,58 @@
             Actualizar y Entrar
           </button>
         </form>
+      </div>
+    </div>
+
+    <!-- VENTANA CONTACTAR ASESOR -->
+    <div
+      v-else-if="ventana === 'contactar'"
+      class="min-h-screen bg-[#0f172a] flex flex-col items-center justify-center p-5 animate-fade-in"
+    >
+      <div class="w-full max-w-md bg-slate-800/70 backdrop-blur border border-white/10 rounded-3xl p-8 shadow-2xl text-center">
+        <h2 class="text-2xl font-black mb-2" style="background: linear-gradient(to right, #60a5fa, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+          Canales de Contacto
+        </h2>
+        <p class="text-slate-400 text-sm mb-8">Estamos disponibles para soporte y consultas técnicas.</p>
+
+        <div class="flex flex-col gap-4 mb-8">
+          <a href="mailto:devs@team.example" class="flex items-center gap-4 p-4 bg-slate-900/50 border border-white/5 rounded-2xl hover:border-blue-500 transition-all text-left group">
+            <div class="bg-blue-500/10 text-blue-400 p-3 rounded-xl">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+            </div>
+            <div>
+              <span class="block text-[10px] font-black text-blue-400 uppercase tracking-widest mb-0.5">Correo Electrónico</span>
+              <span class="text-white font-medium text-sm">devs@team.example</span>
+            </div>
+          </a>
+
+          <a href="tel:+1234567890" class="flex items-center gap-4 p-4 bg-slate-900/50 border border-white/5 rounded-2xl hover:border-blue-500 transition-all text-left group">
+            <div class="bg-blue-500/10 text-blue-400 p-3 rounded-xl">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
+            </div>
+            <div>
+              <span class="block text-[10px] font-black text-blue-400 uppercase tracking-widest mb-0.5">Teléfono / Soporte</span>
+              <span class="text-white font-medium text-sm">+1 (234) 567-890</span>
+            </div>
+          </a>
+
+          <a href="#" class="flex items-center gap-4 p-4 bg-slate-900/50 border border-white/5 rounded-2xl hover:border-blue-500 transition-all text-left group">
+            <div class="bg-blue-500/10 text-blue-400 p-3 rounded-xl">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+            </div>
+            <div>
+              <span class="block text-[10px] font-black text-blue-400 uppercase tracking-widest mb-0.5">Chat en Vivo</span>
+              <span class="text-white font-medium text-sm">@dev_community</span>
+            </div>
+          </a>
+        </div>
+
+        <button
+          @click="ventana = 'inicio'"
+          class="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-black rounded-2xl transition-all uppercase text-sm shadow-lg"
+        >
+          ← Volver al Inicio
+        </button>
       </div>
     </div>
 
