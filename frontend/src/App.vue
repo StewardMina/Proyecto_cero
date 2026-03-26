@@ -1466,6 +1466,35 @@
             </div>
           </div>
 
+          <!-- Clasificación de tipo: solo admin -->
+          <div v-if="usuarioActivo?.rol === 'admin'" class="space-y-3 border-t border-gray-100 pt-4">
+            <label class="text-[10px] font-black text-indigo-600 uppercase tracking-widest">
+              Tipo de Acoso
+            </label>
+            <div class="grid grid-cols-3 gap-3">
+              <button
+                @click="reporteSeleccionado.tipo = 'Tipo I'"
+                :class="reporteSeleccionado?.tipo === 'Tipo I' ? 'bg-blue-600 text-white shadow-lg' : 'bg-gray-100 text-gray-500 hover:bg-blue-50 hover:text-blue-600'"
+                class="p-3 rounded-2xl font-black uppercase text-xs transition-all text-center leading-tight"
+              >
+                Tipo I<br/><span class="font-medium normal-case text-[9px]">Conflicto esporádico</span>
+              </button>
+              <button
+                @click="reporteSeleccionado.tipo = 'Tipo II'"
+                :class="reporteSeleccionado?.tipo === 'Tipo II' ? 'bg-orange-500 text-white shadow-lg' : 'bg-gray-100 text-gray-500 hover:bg-orange-50 hover:text-orange-600'"
+                class="p-3 rounded-2xl font-black uppercase text-xs transition-all text-center leading-tight"
+              >
+                Tipo II<br/><span class="font-medium normal-case text-[9px]">Acoso / Ciberacoso</span>
+              </button>
+              <button
+                @click="reporteSeleccionado.tipo = 'Tipo III'"
+                :class="reporteSeleccionado?.tipo === 'Tipo III' ? 'bg-red-600 text-white shadow-lg' : 'bg-gray-100 text-gray-500 hover:bg-red-50 hover:text-red-600'"
+                class="p-3 rounded-2xl font-black uppercase text-xs transition-all text-center leading-tight"
+              >
+                Tipo III<br/><span class="font-medium normal-case text-[9px]">Presunto delito</span>
+              </button>
+            </div>
+          </div>
 
           <div class="flex gap-4 pt-6">
             <button
