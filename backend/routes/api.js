@@ -642,30 +642,49 @@ router.post('/panico/reporte', async (req, res) => {
         } else {
             try {
                 const transporter = crearTransporter();
+
+                // Verificar conexión SMTP antes de enviar
+                await transporter.verify();
+
                 const mapaUrl = latitud && longitud
                     ? `https://www.google.com/maps?q=${latitud},${longitud}`
                     : null;
 
+                // Procesar imagen: convertir base64 a Buffer
+                let attachments = [];
                 let htmlArchivo = '';
+                const MAX_ATTACH_BYTES = 8 * 1024 * 1024; // 8MB
+
                 if (archivo_base64 && mime_type) {
                     if (mime_type.startsWith('image/')) {
-                        htmlArchivo = `<p><strong>Evidencia fotográfica adjunta:</strong></p>
-                        <img src="cid:evidencia" style="max-width:400px;border-radius:8px;" />`;
+                        const rawBase64 = archivo_base64.replace(/^data:[^;]+;base64,/, '');
+                        const imgBuffer = Buffer.from(rawBase64, 'base64');
+
+                        if (imgBuffer.length <= MAX_ATTACH_BYTES) {
+                            attachments = [{
+                                filename: nombre_archivo || 'evidencia.jpg',
+                                content: imgBuffer,
+                                cid: 'evidencia',
+                            }];
+                            htmlArchivo = `<p><strong>Evidencia fotográfica:</strong></p>
+                            <img src="cid:evidencia" style="max-width:400px;border-radius:8px;" />`;
+                        } else {
+                            htmlArchivo = `<p><strong>Evidencia:</strong> Imagen almacenada en el sistema (${(imgBuffer.length / 1024 / 1024).toFixed(1)} MB). Consultar reporte #${reporte.id}.</p>`;
+                        }
                     } else {
-                        htmlArchivo = `<p><strong>Archivo adjunto:</strong> ${nombre_archivo || 'evidencia'} (${mime_type})<br>
-                        <em>El archivo se encuentra en el sistema. ID del reporte: #${reporte.id}</em></p>`;
+                        htmlArchivo = `<p><strong>Archivo adjunto:</strong> ${nombre_archivo || 'evidencia'} (${mime_type}) — Reporte #${reporte.id}</p>`;
                     }
                 }
 
                 const mailOptions = {
-                    from: `"ALERTA PÁNICO C.E.R.O." <${process.env.EMAIL_USER}>`,
+                    from: `"ALERTA PANICO C.E.R.O." <${process.env.EMAIL_USER}>`,
                     to: emailAutoridades,
-                    subject: `ALERTA DE PANICO #${reporte.id} — ${new Date().toLocaleString('es-CO')}`,
+                    subject: `ALERTA DE PANICO #${reporte.id} - ${new Date().toLocaleString('es-CO')}`,
                     html: `
                     <div style="font-family:Arial,sans-serif;max-width:600px;margin:auto;">
                         <div style="background:#dc2626;color:white;padding:20px;border-radius:8px 8px 0 0;text-align:center;">
                             <h1 style="margin:0;font-size:24px;">ALERTA DE PANICO</h1>
-                            <p style="margin:5px 0 0;">Reporte #${reporte.id} — Sistema C.E.R.O.</p>
+                            <p style="margin:5px 0 0;">Reporte #${reporte.id} - Sistema C.E.R.O.</p>
                         </div>
                         <div style="background:#fff;padding:20px;border:1px solid #e5e7eb;border-top:none;border-radius:0 0 8px 8px;">
                             <p><strong>Fecha y hora:</strong> ${new Date().toLocaleString('es-CO', { timeZone: 'America/Bogota' })}</p>
@@ -678,15 +697,10 @@ router.post('/panico/reporte', async (req, res) => {
                             ${descripcion ? `<p><strong>Descripción del incidente:</strong><br>${descripcion}</p>` : ''}
                             ${htmlArchivo}
                             <hr style="border:1px solid #e5e7eb;margin:20px 0;">
-                            <p style="color:#6b7280;font-size:12px;">Este mensaje fue generado automáticamente por el sistema C.E.R.O. ante la activación del Botón del Pánico.</p>
+                            <p style="color:#6b7280;font-size:12px;">Este mensaje fue generado automáticamente por el sistema C.E.R.O. ante la activación del Boton del Panico.</p>
                         </div>
                     </div>`,
-                    attachments: (archivo_base64 && mime_type && mime_type.startsWith('image/')) ? [{
-                        filename: nombre_archivo || 'evidencia.jpg',
-                        content: archivo_base64.replace(/^data:[^;]+;base64,/, ''),
-                        encoding: 'base64',
-                        cid: 'evidencia',
-                    }] : [],
+                    attachments,
                 };
 
                 await transporter.sendMail(mailOptions);
