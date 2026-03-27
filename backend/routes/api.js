@@ -8,17 +8,19 @@ const nodemailer = require('nodemailer');
 
 function crearTransporter() {
     const port = parseInt(process.env.EMAIL_PORT || '587');
+    const secure = port === 465;
     return nodemailer.createTransport({
         host: process.env.EMAIL_HOST || 'smtp.gmail.com',
         port,
-        secure: port === 465,
+        secure,
+        requireTLS: !secure,
         auth: {
             user: process.env.EMAIL_USER,
             pass: process.env.EMAIL_PASS
         },
-        connectionTimeout: 10000,
-        greetingTimeout: 10000,
-        socketTimeout: 15000,
+        connectionTimeout: 15000,
+        greetingTimeout: 15000,
+        socketTimeout: 30000,
         tls: { rejectUnauthorized: false }
     });
 }
@@ -630,7 +632,14 @@ router.post('/panico/reporte', async (req, res) => {
 
         // Enviar correo de alerta a las autoridades
         const emailAutoridades = process.env.PANICO_EMAIL;
-        if (emailAutoridades && process.env.EMAIL_USER && process.env.EMAIL_PASS) {
+        let emailEnviado = false;
+        let emailError = null;
+
+        if (!emailAutoridades) {
+            console.error('[PANICO] PANICO_EMAIL no está configurado en las variables de entorno.');
+        } else if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+            console.error('[PANICO] EMAIL_USER o EMAIL_PASS no están configurados.');
+        } else {
             try {
                 const transporter = crearTransporter();
                 const mapaUrl = latitud && longitud
@@ -651,11 +660,11 @@ router.post('/panico/reporte', async (req, res) => {
                 const mailOptions = {
                     from: `"ALERTA PÁNICO C.E.R.O." <${process.env.EMAIL_USER}>`,
                     to: emailAutoridades,
-                    subject: `🚨 ALERTA DE PÁNICO #${reporte.id} — ${new Date().toLocaleString('es-CO')}`,
+                    subject: `ALERTA DE PANICO #${reporte.id} — ${new Date().toLocaleString('es-CO')}`,
                     html: `
                     <div style="font-family:Arial,sans-serif;max-width:600px;margin:auto;">
                         <div style="background:#dc2626;color:white;padding:20px;border-radius:8px 8px 0 0;text-align:center;">
-                            <h1 style="margin:0;font-size:24px;">🚨 ALERTA DE PÁNICO</h1>
+                            <h1 style="margin:0;font-size:24px;">ALERTA DE PANICO</h1>
                             <p style="margin:5px 0 0;">Reporte #${reporte.id} — Sistema C.E.R.O.</p>
                         </div>
                         <div style="background:#fff;padding:20px;border:1px solid #e5e7eb;border-top:none;border-radius:0 0 8px 8px;">
@@ -681,13 +690,15 @@ router.post('/panico/reporte', async (req, res) => {
                 };
 
                 await transporter.sendMail(mailOptions);
+                emailEnviado = true;
+                console.log(`[PANICO] Email enviado a ${emailAutoridades} para reporte #${reporte.id}`);
             } catch (emailErr) {
-                console.error('Error enviando email de pánico:', emailErr.message);
-                // No fallar el endpoint si el email no sale
+                emailError = emailErr.message;
+                console.error('[PANICO] Error enviando email:', emailErr.message, emailErr.code || '');
             }
         }
 
-        res.json({ success: true, id: reporte.id, message: 'Reporte de emergencia enviado.' });
+        res.json({ success: true, id: reporte.id, message: 'Reporte de emergencia enviado.', emailEnviado, emailError });
     } catch (error) {
         console.error('Error creando reporte de pánico:', error);
         res.status(500).json({ success: false, message: 'Error al enviar el reporte.' });
