@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { Usuario, Colegio, Reporte } = require('../models');
+const { Usuario, Colegio, Reporte, ReportePanico } = require('../models');
 const bcrypt = require('bcrypt');
 const { Op } = require('sequelize');
 const crypto = require('crypto');
@@ -605,6 +605,106 @@ router.post('/auth/reset-password', async (req, res) => {
     } catch (error) {
         console.error("Error reset-password:", error);
         res.status(500).json({ success: false, message: "Error interno del servidor." });
+    }
+});
+
+// ─── BOTÓN DEL PÁNICO ────────────────────────────────────────────────────────
+
+// POST /panico/reporte — crea reporte de emergencia y notifica a las autoridades
+router.post('/panico/reporte', async (req, res) => {
+    const { latitud, longitud, direccion, descripcion, tipo_archivo, archivo_base64, nombre_archivo, mime_type } = req.body;
+
+    try {
+        const reporte = await ReportePanico.create({
+            latitud: latitud || null,
+            longitud: longitud || null,
+            direccion: direccion || null,
+            descripcion: descripcion || null,
+            tipo_archivo: tipo_archivo || null,
+            archivo_base64: archivo_base64 || null,
+            nombre_archivo: nombre_archivo || null,
+            mime_type: mime_type || null,
+            fecha: new Date(),
+            estado: 'recibido',
+        });
+
+        // Enviar correo de alerta a las autoridades
+        const emailAutoridades = process.env.PANICO_EMAIL;
+        if (emailAutoridades && process.env.EMAIL_USER && process.env.EMAIL_PASS) {
+            try {
+                const transporter = crearTransporter();
+                const mapaUrl = latitud && longitud
+                    ? `https://www.google.com/maps?q=${latitud},${longitud}`
+                    : null;
+
+                let htmlArchivo = '';
+                if (archivo_base64 && mime_type) {
+                    if (mime_type.startsWith('image/')) {
+                        htmlArchivo = `<p><strong>Evidencia fotográfica adjunta:</strong></p>
+                        <img src="cid:evidencia" style="max-width:400px;border-radius:8px;" />`;
+                    } else {
+                        htmlArchivo = `<p><strong>Archivo adjunto:</strong> ${nombre_archivo || 'evidencia'} (${mime_type})<br>
+                        <em>El archivo se encuentra en el sistema. ID del reporte: #${reporte.id}</em></p>`;
+                    }
+                }
+
+                const mailOptions = {
+                    from: `"ALERTA PÁNICO C.E.R.O." <${process.env.EMAIL_USER}>`,
+                    to: emailAutoridades,
+                    subject: `🚨 ALERTA DE PÁNICO #${reporte.id} — ${new Date().toLocaleString('es-CO')}`,
+                    html: `
+                    <div style="font-family:Arial,sans-serif;max-width:600px;margin:auto;">
+                        <div style="background:#dc2626;color:white;padding:20px;border-radius:8px 8px 0 0;text-align:center;">
+                            <h1 style="margin:0;font-size:24px;">🚨 ALERTA DE PÁNICO</h1>
+                            <p style="margin:5px 0 0;">Reporte #${reporte.id} — Sistema C.E.R.O.</p>
+                        </div>
+                        <div style="background:#fff;padding:20px;border:1px solid #e5e7eb;border-top:none;border-radius:0 0 8px 8px;">
+                            <p><strong>Fecha y hora:</strong> ${new Date().toLocaleString('es-CO', { timeZone: 'America/Bogota' })}</p>
+                            ${latitud && longitud ? `
+                            <p><strong>Ubicación GPS:</strong><br>
+                            Latitud: ${latitud} | Longitud: ${longitud}<br>
+                            ${direccion ? `Dirección aproximada: ${direccion}<br>` : ''}
+                            <a href="${mapaUrl}" style="color:#2563eb;font-weight:bold;">Ver en Google Maps</a></p>
+                            ` : '<p><strong>Ubicación:</strong> No disponible (GPS no compartido)</p>'}
+                            ${descripcion ? `<p><strong>Descripción del incidente:</strong><br>${descripcion}</p>` : ''}
+                            ${htmlArchivo}
+                            <hr style="border:1px solid #e5e7eb;margin:20px 0;">
+                            <p style="color:#6b7280;font-size:12px;">Este mensaje fue generado automáticamente por el sistema C.E.R.O. ante la activación del Botón del Pánico.</p>
+                        </div>
+                    </div>`,
+                    attachments: (archivo_base64 && mime_type && mime_type.startsWith('image/')) ? [{
+                        filename: nombre_archivo || 'evidencia.jpg',
+                        content: archivo_base64.replace(/^data:[^;]+;base64,/, ''),
+                        encoding: 'base64',
+                        cid: 'evidencia',
+                    }] : [],
+                };
+
+                await transporter.sendMail(mailOptions);
+            } catch (emailErr) {
+                console.error('Error enviando email de pánico:', emailErr.message);
+                // No fallar el endpoint si el email no sale
+            }
+        }
+
+        res.json({ success: true, id: reporte.id, message: 'Reporte de emergencia enviado.' });
+    } catch (error) {
+        console.error('Error creando reporte de pánico:', error);
+        res.status(500).json({ success: false, message: 'Error al enviar el reporte.' });
+    }
+});
+
+// GET /panico/reportes — lista reportes de pánico (solo para uso administrativo)
+router.get('/panico/reportes', async (req, res) => {
+    try {
+        const reportes = await ReportePanico.findAll({
+            attributes: ['id', 'latitud', 'longitud', 'direccion', 'descripcion', 'tipo_archivo', 'nombre_archivo', 'mime_type', 'fecha', 'estado'],
+            order: [['fecha', 'DESC']],
+        });
+        res.json({ success: true, reportes });
+    } catch (error) {
+        console.error('Error obteniendo reportes de pánico:', error);
+        res.status(500).json({ success: false, message: 'Error del servidor.' });
     }
 });
 

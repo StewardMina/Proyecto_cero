@@ -23,6 +23,18 @@
         </div>
         <div class="flex gap-1 md:gap-4 items-center">
           <button
+            @click="abrirQR"
+            title="Acceder desde móvil"
+            class="px-3 py-2 text-blue-600 hover:text-blue-800 transition-all duration-300 hover:bg-blue-50 rounded-xl flex items-center gap-1 text-sm font-bold"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/>
+              <rect x="5" y="5" width="3" height="3" fill="currentColor" stroke="none"/><rect x="16" y="5" width="3" height="3" fill="currentColor" stroke="none"/><rect x="5" y="16" width="3" height="3" fill="currentColor" stroke="none"/>
+              <path d="M14 14h3v3h-3z" fill="currentColor" stroke="none"/><path d="M17 17h3v3h-3z" fill="currentColor" stroke="none"/><path d="M14 20h3v1h-3z" fill="currentColor" stroke="none"/><path d="M20 14h1v3h-1z" fill="currentColor" stroke="none"/>
+            </svg>
+            <span class="hidden sm:inline">QR Móvil</span>
+          </button>
+          <button
             @click="ventana = 'login'"
             class="px-3 md:px-6 py-2 md:py-3 text-sm md:text-base font-bold text-blue-600 hover:text-blue-800 transition-all duration-300 hover:bg-blue-50 rounded-xl"
           >
@@ -568,6 +580,24 @@
           ↑
         </button>
       </footer>
+
+      <!-- Modal QR Móvil -->
+      <div
+        v-if="mostrarQR"
+        class="fixed inset-0 z-[200] flex items-center justify-center bg-black/60 backdrop-blur-sm"
+        @click.self="mostrarQR = false"
+      >
+        <div class="bg-white rounded-3xl shadow-2xl p-8 flex flex-col items-center gap-4 max-w-xs w-full mx-4 animate-fade-in">
+          <h3 class="text-xl font-black text-blue-900 uppercase tracking-tight">Accede desde tu móvil</h3>
+          <p class="text-sm text-gray-500 text-center">Escanea este código QR para abrir la app en tu dispositivo</p>
+          <canvas ref="qrCanvas" class="rounded-2xl shadow-md"></canvas>
+          <p class="text-xs text-gray-400 text-center break-all">{{ appUrl }}</p>
+          <button
+            @click="mostrarQR = false"
+            class="w-full bg-blue-600 text-white py-3 rounded-2xl font-black text-sm hover:bg-blue-700 transition-all uppercase"
+          >Cerrar</button>
+        </div>
+      </div>
     </div>
 
     <div
@@ -1905,6 +1935,153 @@
       </p>
     </div>
 
+    <!-- ══════════════════════════════════════════════
+         BOTÓN DEL PÁNICO — Flotante siempre visible
+         ══════════════════════════════════════════════ -->
+    <button
+      @click="abrirPanico"
+      type="button"
+      title="Botón del Pánico — Reportar emergencia"
+      class="fixed bottom-36 right-4 md:bottom-44 md:right-8 bg-red-600 hover:bg-red-700 active:scale-95 text-white p-3 md:p-4 rounded-full shadow-2xl z-[100] transition-all animate-pulse-red flex items-center justify-center"
+      style="box-shadow: 0 0 0 0 rgba(220,38,38,0.7);"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+          d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+      </svg>
+    </button>
+
+    <!-- MODAL BOTÓN DEL PÁNICO -->
+    <div
+      v-if="mostrarModalPanico"
+      class="fixed inset-0 z-[300] flex items-center justify-center bg-black/70 backdrop-blur-sm p-4"
+      @click.self="cerrarPanico"
+    >
+      <div class="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden">
+        <!-- Cabecera roja -->
+        <div class="bg-red-600 px-6 py-5 flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+            </svg>
+            <div>
+              <h2 class="text-white font-black text-xl uppercase tracking-wide">Botón del Pánico</h2>
+              <p class="text-red-100 text-xs">Reporte de emergencia</p>
+            </div>
+          </div>
+          <button @click="cerrarPanico" class="text-white hover:text-red-200 transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+          </button>
+        </div>
+
+        <!-- Contenido -->
+        <div class="p-6 space-y-4 max-h-[70vh] overflow-y-auto">
+
+          <!-- Pantalla de éxito -->
+          <div v-if="panicoEnviado" class="text-center py-6 space-y-4">
+            <div class="text-green-500 flex justify-center">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+              </svg>
+            </div>
+            <h3 class="text-xl font-black text-gray-800">¡Reporte Enviado!</h3>
+            <p class="text-gray-600 text-sm">Tu reporte de emergencia fue recibido. Las autoridades competentes han sido notificadas.</p>
+            <button @click="cerrarPanico" class="w-full bg-green-600 text-white py-3 rounded-xl font-bold hover:bg-green-700 transition-colors">
+              Cerrar
+            </button>
+          </div>
+
+          <!-- Formulario -->
+          <template v-else>
+            <!-- Ubicación -->
+            <div class="bg-gray-50 rounded-2xl p-4 space-y-2">
+              <p class="text-sm font-bold text-gray-700 flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                </svg>
+                Ubicación
+              </p>
+              <div v-if="panicoObteniendoUbicacion" class="text-sm text-gray-500 flex items-center gap-2">
+                <svg class="animate-spin h-4 w-4 text-red-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+                </svg>
+                Obteniendo ubicación GPS...
+              </div>
+              <div v-else-if="panicoUbicacion" class="text-sm text-green-700 font-semibold">
+                ✓ GPS obtenido: {{ panicoUbicacion.latitud.toFixed(5) }}, {{ panicoUbicacion.longitud.toFixed(5) }}
+              </div>
+              <div v-else class="text-sm text-orange-600">
+                GPS no disponible — el reporte se enviará sin coordenadas.
+              </div>
+              <button
+                v-if="!panicoUbicacion && !panicoObteniendoUbicacion"
+                @click="capturarUbicacion"
+                class="text-xs text-red-600 font-bold underline hover:text-red-800"
+              >
+                Intentar obtener ubicación de nuevo
+              </button>
+            </div>
+
+            <!-- Descripción -->
+            <div>
+              <label class="text-sm font-bold text-gray-700 block mb-1">¿Qué está pasando? <span class="text-gray-400 font-normal">(opcional)</span></label>
+              <textarea
+                v-model="panicoDescripcion"
+                rows="3"
+                placeholder="Describe brevemente la situación de peligro..."
+                class="w-full p-3 border-2 border-gray-200 rounded-xl text-sm outline-none focus:border-red-400 resize-none"
+              ></textarea>
+            </div>
+
+            <!-- Archivo -->
+            <div>
+              <label class="text-sm font-bold text-gray-700 block mb-1">Evidencia <span class="text-gray-400 font-normal">(foto, audio o video — opcional)</span></label>
+              <label class="flex items-center justify-center gap-2 border-2 border-dashed border-gray-300 rounded-xl p-4 cursor-pointer hover:border-red-400 transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/>
+                </svg>
+                <span class="text-sm text-gray-500">{{ panicoArchivoNombre || 'Seleccionar archivo' }}</span>
+                <input
+                  type="file"
+                  accept="image/*,audio/*,video/*"
+                  class="hidden"
+                  @change="seleccionarArchivoPanico"
+                />
+              </label>
+              <p v-if="panicoArchivoNombre" class="text-xs text-green-600 mt-1 font-semibold">✓ {{ panicoArchivoNombre }}</p>
+              <p class="text-xs text-gray-400 mt-1">Máx. 10 MB. Videos cortos recomendados.</p>
+            </div>
+
+            <!-- Error -->
+            <p v-if="panicoError" class="text-sm text-red-600 font-semibold bg-red-50 p-3 rounded-xl">{{ panicoError }}</p>
+
+            <!-- Botón enviar -->
+            <button
+              @click="enviarPanico"
+              :disabled="panicoCargando"
+              class="w-full bg-red-600 hover:bg-red-700 disabled:bg-red-300 text-white py-4 rounded-xl font-black text-lg uppercase tracking-wide transition-all flex items-center justify-center gap-2"
+            >
+              <svg v-if="panicoCargando" class="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+              </svg>
+              <svg v-else xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
+              </svg>
+              {{ panicoCargando ? 'Enviando...' : 'ENVIAR ALERTA DE EMERGENCIA' }}
+            </button>
+
+            <p class="text-center text-xs text-gray-400">Tu reporte será enviado inmediatamente a las autoridades competentes.</p>
+          </template>
+        </div>
+      </div>
+    </div>
+
     <!-- BOTONES FLOTANTES GLOBALES -->
     <button
       @click="mostrarChatbot = !mostrarChatbot"
@@ -2021,6 +2198,7 @@
 <script>
 import api from "./services/api";
 import * as XLSX from "xlsx";
+import QRCode from "qrcode";
 import html2pdf from "html2pdf.js";
 import Chart from "chart.js/auto";
 import "aos/dist/aos.css";
@@ -2028,6 +2206,8 @@ import "aos/dist/aos.css";
 export default {
   data() {
     return {
+      mostrarQR: false,
+      appUrl: "https://proyectocero-production.up.railway.app",
       mostrarChatbot: false,
       mensajeChat: "",
       chatCargando: false,
@@ -2120,6 +2300,21 @@ export default {
       },
       nuevaPass: "",
       confirmarPass: "",
+
+      // Botón del Pánico
+      mostrarModalPanico: false,
+      panicoCargando: false,
+      panicoEnviado: false,
+      panicoError: "",
+      panicoUbicacion: null,
+      panicoUbicacionTexto: "",
+      panicoDescripcion: "",
+      panicoArchivo: null,
+      panicoArchivoBase64: null,
+      panicoArchivoNombre: "",
+      panicoArchivoMime: "",
+      panicoTipoArchivo: "",
+      panicoObteniendoUbicacion: false,
     };
   },
 
@@ -2242,6 +2437,16 @@ export default {
   },
 
   methods: {
+    async abrirQR() {
+      this.mostrarQR = true;
+      await this.$nextTick();
+      QRCode.toCanvas(this.$refs.qrCanvas, this.appUrl, {
+        width: 220,
+        margin: 2,
+        color: { dark: "#1e3a8a", light: "#ffffff" },
+      });
+    },
+
     async solicitarResetPassword() {
       this.cargandoReset = true;
       this.mensajeReset = "";
@@ -2749,6 +2954,92 @@ export default {
       XLSX.utils.book_append_sheet(workbook, worksheet, "Estudiantes");
       XLSX.writeFile(workbook, "Plantilla_CERO.xlsx");
     },
+
+    // ─── BOTÓN DEL PÁNICO ───────────────────────────────────────────────────
+    abrirPanico() {
+      this.mostrarModalPanico = true;
+      this.panicoEnviado = false;
+      this.panicoError = "";
+      this.panicoDescripcion = "";
+      this.panicoArchivo = null;
+      this.panicoArchivoBase64 = null;
+      this.panicoArchivoNombre = "";
+      this.panicoArchivoMime = "";
+      this.panicoTipoArchivo = "";
+      this.capturarUbicacion();
+    },
+
+    cerrarPanico() {
+      if (this.panicoCargando) return;
+      this.mostrarModalPanico = false;
+      this.panicoUbicacion = null;
+      this.panicoEnviado = false;
+      this.panicoError = "";
+    },
+
+    capturarUbicacion() {
+      if (!navigator.geolocation) return;
+      this.panicoObteniendoUbicacion = true;
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          this.panicoUbicacion = {
+            latitud: pos.coords.latitude,
+            longitud: pos.coords.longitude,
+          };
+          this.panicoObteniendoUbicacion = false;
+        },
+        () => {
+          this.panicoObteniendoUbicacion = false;
+        },
+        { timeout: 10000, enableHighAccuracy: true }
+      );
+    },
+
+    seleccionarArchivoPanico(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const maxBytes = 10 * 1024 * 1024; // 10 MB
+      if (file.size > maxBytes) {
+        this.panicoError = "El archivo es demasiado grande. Máximo 10 MB.";
+        return;
+      }
+      this.panicoError = "";
+      this.panicoArchivoNombre = file.name;
+      this.panicoArchivoMime = file.type;
+      if (file.type.startsWith("image/")) this.panicoTipoArchivo = "foto";
+      else if (file.type.startsWith("audio/")) this.panicoTipoArchivo = "audio";
+      else if (file.type.startsWith("video/")) this.panicoTipoArchivo = "video";
+      else this.panicoTipoArchivo = "archivo";
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        this.panicoArchivoBase64 = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    },
+
+    async enviarPanico() {
+      this.panicoCargando = true;
+      this.panicoError = "";
+      try {
+        const payload = {
+          latitud: this.panicoUbicacion?.latitud || null,
+          longitud: this.panicoUbicacion?.longitud || null,
+          descripcion: this.panicoDescripcion || null,
+          tipo_archivo: this.panicoTipoArchivo || null,
+          archivo_base64: this.panicoArchivoBase64 || null,
+          nombre_archivo: this.panicoArchivoNombre || null,
+          mime_type: this.panicoArchivoMime || null,
+        };
+        await api.post("/panico/reporte", payload);
+        this.panicoEnviado = true;
+      } catch (e) {
+        this.panicoError = "Error al enviar el reporte. Intenta de nuevo.";
+      } finally {
+        this.panicoCargando = false;
+      }
+    },
+    // ────────────────────────────────────────────────────────────────────────
   },
 };
 </script>
@@ -2766,8 +3057,10 @@ export default {
 .inset-0 { top: 0; right: 0; bottom: 0; left: 0; }
 @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes pulsoRojo { 0% { box-shadow: 0 0 0 0 rgba(220,38,38,0.7); } 70% { box-shadow: 0 0 0 14px rgba(220,38,38,0); } 100% { box-shadow: 0 0 0 0 rgba(220,38,38,0); } }
 .animate-fade-in { animation: fadeIn 0.8s ease-out; }
 .animate-slide-up { animation: slideUp 0.6s ease-out; }
+.animate-pulse-red { animation: pulsoRojo 1.8s infinite; }
 button:hover { transform: translateY(-2px); box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15); }
 button:active { transform: translateY(0); }
 .shadow-soft { box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08); }
