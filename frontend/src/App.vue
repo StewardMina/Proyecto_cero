@@ -575,7 +575,7 @@
 
         <button
           @click="volverArriba"
-          class="fixed bottom-4 right-4 md:bottom-8 md:right-8 bg-blue-600 text-white p-3 md:p-4 rounded-2xl shadow-2xl hover:bg-blue-700 transition-all z-50"
+          class="fixed bottom-24 right-4 md:bottom-28 md:right-8 bg-blue-600 text-white p-3 md:p-4 rounded-2xl shadow-2xl hover:bg-blue-700 transition-all z-50"
         >
           ↑
         </button>
