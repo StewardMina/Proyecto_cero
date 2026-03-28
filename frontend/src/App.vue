@@ -1936,19 +1936,23 @@
     </div>
 
     <!-- ══════════════════════════════════════════════
-         BOTÓN DEL PÁNICO — Flotante siempre visible
+         BOTÓN S.O.S. — Flotante siempre visible
          ══════════════════════════════════════════════ -->
     <button
       @click="abrirPanico"
       type="button"
-      title="Botón del Pánico — Reportar emergencia"
-      class="fixed bottom-36 right-4 md:bottom-44 md:right-8 bg-red-600 hover:bg-red-700 active:scale-95 text-white p-3 md:p-4 rounded-full shadow-2xl z-[100] transition-all animate-pulse-red flex items-center justify-center"
-      style="box-shadow: 0 0 0 0 rgba(220,38,38,0.7);"
+      title="Alerta S.O.S. — Reportar emergencia inmediata"
+      class="fixed bottom-6 left-4 md:bottom-8 md:left-8 bg-red-600 hover:bg-red-700 active:scale-95 text-white pl-4 pr-5 py-3 rounded-2xl shadow-2xl z-[100] transition-all animate-pulse-red flex items-center gap-2"
+      style="box-shadow: 0 0 20px rgba(220,38,38,0.6);"
     >
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
           d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
       </svg>
+      <span class="flex flex-col leading-none">
+        <span class="font-black text-sm tracking-widest">S.O.S.</span>
+        <span class="text-red-200 text-[10px] font-semibold tracking-wide uppercase">Emergencia</span>
+      </span>
     </button>
 
     <!-- MODAL BOTÓN DEL PÁNICO -->
@@ -1966,8 +1970,8 @@
                 d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
             </svg>
             <div>
-              <h2 class="text-white font-black text-xl uppercase tracking-wide">Botón del Pánico</h2>
-              <p class="text-red-100 text-xs">Reporte de emergencia</p>
+              <h2 class="text-white font-black text-xl uppercase tracking-wide">Alerta S.O.S.</h2>
+              <p class="text-red-100 text-xs">Notifica a las autoridades de inmediato</p>
             </div>
           </div>
           <button @click="cerrarPanico" class="text-white hover:text-red-200 transition-colors">
@@ -2073,7 +2077,7 @@
               <svg v-else xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
               </svg>
-              {{ panicoCargando ? 'Enviando...' : 'ENVIAR ALERTA DE EMERGENCIA' }}
+              {{ panicoCargando ? 'Enviando S.O.S....' : 'ENVIAR S.O.S. AHORA' }}
             </button>
 
             <p class="text-center text-xs text-gray-400">Tu reporte será enviado inmediatamente a las autoridades competentes.</p>
@@ -2086,46 +2090,29 @@
     <button
       @click="mostrarChatbot = !mostrarChatbot"
       type="button"
-      class="fixed bottom-20 right-4 md:bottom-24 md:right-8 bg-blue-900 text-white p-3 md:p-4 rounded-full shadow-2xl z-[100] hover:scale-110 active:scale-95 transition-all cursor-pointer"
+      class="fixed bottom-20 right-4 md:bottom-24 md:right-8 bg-blue-900 text-white pl-4 pr-5 py-3 rounded-2xl shadow-2xl z-[100] hover:bg-blue-800 active:scale-95 transition-all cursor-pointer flex items-center gap-2"
     >
-      <svg
-        v-if="!mostrarChatbot"
-        xmlns="http://www.w3.org/2000/svg"
-        class="h-6 w-6"
-        fill="none"
-        viewBox="0 0 24 24"
-        stroke="currentColor"
-      >
-        <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          stroke-width="2"
-          d="M8 10h.01M12 10h.01M16 10h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
-        />
+      <svg v-if="!mostrarChatbot" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
       </svg>
-      <svg
-        v-else
-        xmlns="http://www.w3.org/2000/svg"
-        class="h-6 w-6"
-        fill="none"
-        viewBox="0 0 24 24"
-        stroke="currentColor"
-      >
-        <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          stroke-width="2"
-          d="M6 18L18 6M6 6l12 12"
-        />
+      <svg v-else xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
       </svg>
+      <span class="flex flex-col leading-none">
+        <span class="font-black text-sm tracking-wide">{{ mostrarChatbot ? 'Cerrar' : 'Asistente' }}</span>
+        <span class="text-blue-300 text-[10px] font-semibold uppercase tracking-wide">C.E.R.O.</span>
+      </span>
     </button>
 
     <button
       v-if="mostrarBotonArriba"
       @click="volverArriba"
-      class="fixed bottom-4 right-4 md:bottom-8 md:right-8 bg-blue-600 text-white p-3 md:p-4 rounded-2xl shadow-2xl hover:bg-blue-700 transition-all z-50"
+      class="fixed bottom-6 right-4 md:bottom-8 md:right-8 bg-white border border-gray-200 text-gray-600 p-3 rounded-2xl shadow-lg hover:bg-gray-50 transition-all z-50"
+      title="Volver arriba"
     >
-      ↑
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/>
+      </svg>
     </button>
 
     <!-- VENTANA CHATBOT -->
