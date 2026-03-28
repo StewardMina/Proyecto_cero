@@ -2090,18 +2090,6 @@
     <div class="fixed right-4 md:right-8 z-[100] flex flex-col items-end gap-2"
          :style="{ bottom: '1.5rem' }">
 
-      <!-- Flecha arriba -->
-      <button
-        v-if="mostrarBotonArriba"
-        @click="volverArriba"
-        class="bg-white border border-gray-200 text-gray-600 p-3 rounded-2xl shadow-lg hover:bg-gray-50 active:scale-95 transition-all"
-        title="Volver arriba"
-      >
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/>
-        </svg>
-      </button>
-
       <!-- Chatbot -->
       <button
         @click="mostrarChatbot = !mostrarChatbot"
