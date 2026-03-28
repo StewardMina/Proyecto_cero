@@ -21,6 +21,7 @@
     "express": "^5.2.1",
     "mysql2": "^3.17.1",
     "nodemailer": "^8.0.4",
+    "resend": "^6.9.4",
     "sequelize": "^6.37.8",
     "umzug": "^3.0.0"
   },

@@ -4,41 +4,10 @@ const { Usuario, Colegio, Reporte, ReportePanico } = require('../models');
 const bcrypt = require('bcrypt');
 const { Op } = require('sequelize');
 const crypto = require('crypto');
-const nodemailer = require('nodemailer');
-const { resolve4 } = require('dns').promises;
+const { Resend } = require('resend');
 
-async function crearTransporter() {
-    const port = parseInt(process.env.EMAIL_PORT || '587');
-    const secure = port === 465;
-    const hostName = process.env.EMAIL_HOST || 'smtp.gmail.com';
-
-    // Resolver hostname a IPv4 explícitamente para evitar IPv6 en Railway
-    let host = hostName;
-    try {
-        const addresses = await resolve4(hostName);
-        if (addresses && addresses.length > 0) {
-            host = addresses[0];
-            console.log(`[EMAIL] ${hostName} → ${host} (IPv4)`);
-        }
-    } catch (e) {
-        console.log(`[EMAIL] Usando hostname sin resolver: ${hostName}`);
-    }
-
-    return nodemailer.createTransport({
-        host,
-        port,
-        secure,
-        requireTLS: !secure,
-        family: 4,
-        auth: {
-            user: process.env.EMAIL_USER,
-            pass: process.env.EMAIL_PASS
-        },
-        connectionTimeout: 15000,
-        greetingTimeout: 15000,
-        socketTimeout: 30000,
-        tls: { rejectUnauthorized: false }
-    });
+function getResend() {
+    return new Resend(process.env.RESEND_API_KEY);
 }
 
 // Ruta para carga masiva de estudiantes
@@ -561,14 +530,14 @@ router.post('/auth/forgot-password', async (req, res) => {
         const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
         const resetLink = `${frontendUrl}?token=${token}`;
 
-        if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+        if (!process.env.RESEND_API_KEY) {
             return res.status(500).json({ success: false, message: "El servicio de correo no está configurado. Contacta al administrador." });
         }
 
-        const transporter = await crearTransporter();
+        const resend = getResend();
         const destinatario = usuario.correo_recuperacion || usuario.correo;
-        await transporter.sendMail({
-            from: `"Proyecto C.E.R.O." <${process.env.EMAIL_USER}>`,
+        await resend.emails.send({
+            from: 'Proyecto C.E.R.O. <onboarding@resend.dev>',
             to: destinatario,
             subject: 'Restaurar contraseña - Proyecto C.E.R.O.',
             html: `
@@ -652,48 +621,38 @@ router.post('/panico/reporte', async (req, res) => {
         let emailError = null;
 
         if (!emailAutoridades) {
-            console.error('[PANICO] PANICO_EMAIL no está configurado en las variables de entorno.');
-        } else if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
-            console.error('[PANICO] EMAIL_USER o EMAIL_PASS no están configurados.');
+            console.error('[PANICO] PANICO_EMAIL no está configurado.');
+        } else if (!process.env.RESEND_API_KEY) {
+            console.error('[PANICO] RESEND_API_KEY no está configurado.');
         } else {
             try {
-                const transporter = await crearTransporter();
-
-                // Verificar conexión SMTP antes de enviar
-                await transporter.verify();
-
+                const resend = getResend();
                 const mapaUrl = latitud && longitud
                     ? `https://www.google.com/maps?q=${latitud},${longitud}`
                     : null;
 
-                // Procesar imagen: convertir base64 a Buffer
+                // Procesar imagen
                 let attachments = [];
                 let htmlArchivo = '';
                 const MAX_ATTACH_BYTES = 8 * 1024 * 1024; // 8MB
 
-                if (archivo_base64 && mime_type) {
-                    if (mime_type.startsWith('image/')) {
-                        const rawBase64 = archivo_base64.replace(/^data:[^;]+;base64,/, '');
-                        const imgBuffer = Buffer.from(rawBase64, 'base64');
+                if (archivo_base64 && mime_type && mime_type.startsWith('image/')) {
+                    const rawBase64 = archivo_base64.replace(/^data:[^;]+;base64,/, '');
+                    const imgBuffer = Buffer.from(rawBase64, 'base64');
 
-                        if (imgBuffer.length <= MAX_ATTACH_BYTES) {
-                            attachments = [{
-                                filename: nombre_archivo || 'evidencia.jpg',
-                                content: imgBuffer,
-                                cid: 'evidencia',
-                            }];
-                            htmlArchivo = `<p><strong>Evidencia fotográfica:</strong></p>
-                            <img src="cid:evidencia" style="max-width:400px;border-radius:8px;" />`;
-                        } else {
-                            htmlArchivo = `<p><strong>Evidencia:</strong> Imagen almacenada en el sistema (${(imgBuffer.length / 1024 / 1024).toFixed(1)} MB). Consultar reporte #${reporte.id}.</p>`;
-                        }
+                    if (imgBuffer.length <= MAX_ATTACH_BYTES) {
+                        attachments = [{
+                            filename: nombre_archivo || 'evidencia.jpg',
+                            content: imgBuffer,
+                        }];
+                        htmlArchivo = `<p><strong>Evidencia fotográfica adjunta al correo.</strong></p>`;
                     } else {
-                        htmlArchivo = `<p><strong>Archivo adjunto:</strong> ${nombre_archivo || 'evidencia'} (${mime_type}) — Reporte #${reporte.id}</p>`;
+                        htmlArchivo = `<p><strong>Evidencia:</strong> Imagen almacenada en el sistema (${(imgBuffer.length / 1024 / 1024).toFixed(1)} MB). Consultar reporte #${reporte.id}.</p>`;
                     }
                 }
 
-                const mailOptions = {
-                    from: `"ALERTA PANICO C.E.R.O." <${process.env.EMAIL_USER}>`,
+                await resend.emails.send({
+                    from: 'ALERTA PANICO C.E.R.O. <onboarding@resend.dev>',
                     to: emailAutoridades,
                     subject: `ALERTA DE PANICO #${reporte.id} - ${new Date().toLocaleString('es-CO')}`,
                     html: `
@@ -713,18 +672,17 @@ router.post('/panico/reporte', async (req, res) => {
                             ${descripcion ? `<p><strong>Descripción del incidente:</strong><br>${descripcion}</p>` : ''}
                             ${htmlArchivo}
                             <hr style="border:1px solid #e5e7eb;margin:20px 0;">
-                            <p style="color:#6b7280;font-size:12px;">Este mensaje fue generado automáticamente por el sistema C.E.R.O. ante la activación del Boton del Panico.</p>
+                            <p style="color:#6b7280;font-size:12px;">Este mensaje fue generado automáticamente por el sistema C.E.R.O.</p>
                         </div>
                     </div>`,
                     attachments,
-                };
+                });
 
-                await transporter.sendMail(mailOptions);
                 emailEnviado = true;
                 console.log(`[PANICO] Email enviado a ${emailAutoridades} para reporte #${reporte.id}`);
             } catch (emailErr) {
                 emailError = emailErr.message;
-                console.error('[PANICO] Error enviando email:', emailErr.message, emailErr.code || '');
+                console.error('[PANICO] Error enviando email:', emailErr.message);
             }
         }
 
