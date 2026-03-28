@@ -5,12 +5,27 @@ const bcrypt = require('bcrypt');
 const { Op } = require('sequelize');
 const crypto = require('crypto');
 const nodemailer = require('nodemailer');
+const { resolve4 } = require('dns').promises;
 
-function crearTransporter() {
+async function crearTransporter() {
     const port = parseInt(process.env.EMAIL_PORT || '587');
     const secure = port === 465;
+    const hostName = process.env.EMAIL_HOST || 'smtp.gmail.com';
+
+    // Resolver hostname a IPv4 explícitamente para evitar IPv6 en Railway
+    let host = hostName;
+    try {
+        const addresses = await resolve4(hostName);
+        if (addresses && addresses.length > 0) {
+            host = addresses[0];
+            console.log(`[EMAIL] ${hostName} → ${host} (IPv4)`);
+        }
+    } catch (e) {
+        console.log(`[EMAIL] Usando hostname sin resolver: ${hostName}`);
+    }
+
     return nodemailer.createTransport({
-        host: process.env.EMAIL_HOST || 'smtp.gmail.com',
+        host,
         port,
         secure,
         requireTLS: !secure,
@@ -550,7 +565,7 @@ router.post('/auth/forgot-password', async (req, res) => {
             return res.status(500).json({ success: false, message: "El servicio de correo no está configurado. Contacta al administrador." });
         }
 
-        const transporter = crearTransporter();
+        const transporter = await crearTransporter();
         const destinatario = usuario.correo_recuperacion || usuario.correo;
         await transporter.sendMail({
             from: `"Proyecto C.E.R.O." <${process.env.EMAIL_USER}>`,
@@ -642,7 +657,7 @@ router.post('/panico/reporte', async (req, res) => {
             console.error('[PANICO] EMAIL_USER o EMAIL_PASS no están configurados.');
         } else {
             try {
-                const transporter = crearTransporter();
+                const transporter = await crearTransporter();
 
                 // Verificar conexión SMTP antes de enviar
                 await transporter.verify();
