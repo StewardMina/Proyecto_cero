@@ -651,7 +651,7 @@ router.post('/panico/reporte', async (req, res) => {
                     }
                 }
 
-                await resend.emails.send({
+                const { data, error: resendError } = await resend.emails.send({
                     from: 'ALERTA PANICO C.E.R.O. <onboarding@resend.dev>',
                     to: emailAutoridades,
                     subject: `ALERTA DE PANICO #${reporte.id} - ${new Date().toLocaleString('es-CO')}`,
@@ -678,8 +678,12 @@ router.post('/panico/reporte', async (req, res) => {
                     attachments,
                 });
 
+                if (resendError) {
+                    throw new Error(JSON.stringify(resendError));
+                }
+
                 emailEnviado = true;
-                console.log(`[PANICO] Email enviado a ${emailAutoridades} para reporte #${reporte.id}`);
+                console.log(`[PANICO] Email enviado. ID Resend: ${data?.id}`);
             } catch (emailErr) {
                 emailError = emailErr.message;
                 console.error('[PANICO] Error enviando email:', emailErr.message);
