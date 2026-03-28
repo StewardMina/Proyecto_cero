@@ -1029,6 +1029,16 @@
           <span class="text-lg">🏠</span>Inicio
         </button>
         <button
+          @click="mostrarChatbot = !mostrarChatbot"
+          :class="mostrarChatbot ? 'bg-blue-700' : ''"
+          class="flex-1 flex flex-col items-center justify-center py-3 gap-1 text-[10px] font-black uppercase transition-all"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+          </svg>
+          Chat
+        </button>
+        <button
           @click="subTab = 'reportes'; obtenerReportes();"
           :class="subTab === 'reportes' ? 'bg-blue-700' : ''"
           class="flex-1 flex flex-col items-center justify-center py-3 gap-1 text-[10px] font-black uppercase transition-all"
@@ -2086,9 +2096,9 @@
       </div>
     </div>
 
-    <!-- BOTONES FLOTANTES DERECHA: flecha arriba + chatbot debajo -->
-    <div class="fixed right-4 md:right-8 z-[100] flex flex-col items-end gap-2"
-         :style="{ bottom: '1.5rem' }">
+    <!-- BOTONES FLOTANTES DERECHA: solo desktop -->
+    <div class="hidden md:flex fixed right-8 z-[100] flex-col items-end gap-2"
+         :style="{ bottom: '2rem' }">
 
       <!-- Chatbot -->
       <button
