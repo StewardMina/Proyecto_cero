@@ -1,7 +1,7 @@
 const QRCode = require('qrcode');
 const path = require('path');
 
-const url = 'https://proyectocero-production.up.railway.app';
+const url = 'https://lucky-surprise-production-1eee.up.railway.app';
 const outputPath = path.join(__dirname, 'dactacero-qr.png');
 
 QRCode.toFile(outputPath, url, {

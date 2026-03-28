@@ -2239,7 +2239,7 @@ export default {
   data() {
     return {
       mostrarQR: false,
-      appUrl: "https://proyectocero-production.up.railway.app",
+      appUrl: "https://lucky-surprise-production-1eee.up.railway.app",
       mostrarChatbot: false,
       mensajeChat: "",
       chatCargando: false,
