@@ -1039,6 +1039,15 @@
           Chat
         </button>
         <button
+          @click="volverArriba"
+          class="flex-1 flex flex-col items-center justify-center py-3 gap-1 text-[10px] font-black uppercase transition-all"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/>
+          </svg>
+          Subir
+        </button>
+        <button
           @click="subTab = 'reportes'; obtenerReportes();"
           :class="subTab === 'reportes' ? 'bg-blue-700' : ''"
           class="flex-1 flex flex-col items-center justify-center py-3 gap-1 text-[10px] font-black uppercase transition-all"
@@ -2096,9 +2105,9 @@
       </div>
     </div>
 
-    <!-- BOTONES FLOTANTES DERECHA: solo desktop -->
-    <div class="hidden md:flex fixed right-8 z-[100] flex-col items-end gap-2"
-         :style="{ bottom: '2rem' }">
+    <!-- BOTONES FLOTANTES DERECHA: flecha arriba + chatbot debajo -->
+    <div class="fixed right-4 md:right-8 z-[100] flex flex-col items-end gap-2"
+         :style="{ bottom: '1.5rem' }">
 
       <!-- Chatbot -->
       <button
