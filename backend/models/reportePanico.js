@@ -26,6 +26,7 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING(50),
       defaultValue: 'recibido',
     },
+    ip_origen: DataTypes.STRING(100),
   }, {
     sequelize,
     modelName: 'ReportePanico',

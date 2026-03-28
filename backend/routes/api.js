@@ -5,6 +5,16 @@ const bcrypt = require('bcrypt');
 const { Op } = require('sequelize');
 const crypto = require('crypto');
 const { Resend } = require('resend');
+const rateLimit = require('express-rate-limit');
+
+// Máximo 3 reportes de pánico por IP cada 15 minutos
+const panicoLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 3,
+    standardHeaders: true,
+    legacyHeaders: false,
+    message: { success: false, message: 'Demasiados reportes enviados. Espera 15 minutos antes de intentar de nuevo.' },
+});
 
 function getResend() {
     return new Resend(process.env.RESEND_API_KEY);
@@ -598,10 +608,23 @@ router.post('/auth/reset-password', async (req, res) => {
 // ─── BOTÓN DEL PÁNICO ────────────────────────────────────────────────────────
 
 // POST /panico/reporte — crea reporte de emergencia y notifica a las autoridades
-router.post('/panico/reporte', async (req, res) => {
+router.post('/panico/reporte', panicoLimiter, async (req, res) => {
     const { latitud, longitud, direccion, descripcion, tipo_archivo, archivo_base64, nombre_archivo, mime_type } = req.body;
 
     try {
+        // Bloquear si ya hay un reporte reciente de la misma IP en los últimos 10 minutos
+        const ip = req.ip || req.headers['x-forwarded-for'] || 'desconocida';
+        const hace10min = new Date(Date.now() - 10 * 60 * 1000);
+        const reporteReciente = await ReportePanico.findOne({
+            where: { ip_origen: ip, fecha: { [Op.gte]: hace10min } },
+        });
+        if (reporteReciente) {
+            return res.status(429).json({
+                success: false,
+                message: 'Ya enviaste un reporte de emergencia recientemente. Por favor espera antes de enviar otro.',
+            });
+        }
+
         const reporte = await ReportePanico.create({
             latitud: latitud || null,
             longitud: longitud || null,
@@ -613,6 +636,7 @@ router.post('/panico/reporte', async (req, res) => {
             mime_type: mime_type || null,
             fecha: new Date(),
             estado: 'recibido',
+            ip_origen: ip,
         });
 
         // Enviar correo de alerta a las autoridades

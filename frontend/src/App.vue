@@ -1974,6 +1974,42 @@
       </span>
     </button>
 
+    <!-- MODAL ADVERTENCIA S.O.S. -->
+    <div
+      v-if="panicoMostrarAdvertencia"
+      class="fixed inset-0 z-[300] flex items-center justify-center bg-black/70 backdrop-blur-sm p-4"
+      @click.self="panicoMostrarAdvertencia = false"
+    >
+      <div class="bg-white rounded-3xl shadow-2xl w-full max-w-sm overflow-hidden">
+        <div class="bg-red-600 px-6 py-5 text-center">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-white mx-auto mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+          </svg>
+          <h2 class="text-white font-black text-xl uppercase tracking-wide">¿Es una emergencia real?</h2>
+        </div>
+        <div class="p-6 space-y-4 text-center">
+          <p class="text-gray-700 text-sm leading-relaxed">
+            Este botón notifica <strong>inmediatamente a las autoridades</strong>. Los reportes falsos pueden tener consecuencias disciplinarias y saturar el sistema de emergencias.
+          </p>
+          <p class="text-red-600 font-bold text-sm">Solo úsalo si estás en peligro real.</p>
+          <div class="flex gap-3 mt-4">
+            <button
+              @click="panicoMostrarAdvertencia = false"
+              class="flex-1 border border-gray-300 text-gray-700 py-3 rounded-xl font-semibold hover:bg-gray-50 transition-colors"
+            >
+              Cancelar
+            </button>
+            <button
+              @click="confirmarAbrirPanico"
+              class="flex-1 bg-red-600 text-white py-3 rounded-xl font-bold hover:bg-red-700 transition-colors"
+            >
+              Sí, es real
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- MODAL BOTÓN DEL PÁNICO -->
     <div
       v-if="mostrarModalPanico"
@@ -2299,6 +2335,7 @@ export default {
 
       // Botón del Pánico
       mostrarModalPanico: false,
+      panicoMostrarAdvertencia: false,
       panicoCargando: false,
       panicoEnviado: false,
       panicoError: "",
@@ -2953,6 +2990,11 @@ export default {
 
     // ─── BOTÓN DEL PÁNICO ───────────────────────────────────────────────────
     abrirPanico() {
+      this.panicoMostrarAdvertencia = true;
+    },
+
+    confirmarAbrirPanico() {
+      this.panicoMostrarAdvertencia = false;
       this.mostrarModalPanico = true;
       this.panicoEnviado = false;
       this.panicoError = "";
@@ -3015,6 +3057,15 @@ export default {
     },
 
     async enviarPanico() {
+      // Cooldown: bloquear si ya envió en los últimos 10 minutos
+      const COOLDOWN_MS = 10 * 60 * 1000;
+      const ultimoEnvio = localStorage.getItem("panico_ultimo_envio");
+      if (ultimoEnvio && Date.now() - parseInt(ultimoEnvio) < COOLDOWN_MS) {
+        const restantes = Math.ceil((COOLDOWN_MS - (Date.now() - parseInt(ultimoEnvio))) / 60000);
+        this.panicoError = `Ya enviaste un reporte recientemente. Espera ${restantes} minuto(s) antes de enviar otro.`;
+        return;
+      }
+
       this.panicoCargando = true;
       this.panicoError = "";
       try {
@@ -3028,6 +3079,7 @@ export default {
           mime_type: this.panicoArchivoMime || null,
         };
         await api.post("/panico/reporte", payload);
+        localStorage.setItem("panico_ultimo_envio", Date.now().toString());
         this.panicoEnviado = true;
       } catch (e) {
         this.panicoError = "Error al enviar el reporte. Intenta de nuevo.";

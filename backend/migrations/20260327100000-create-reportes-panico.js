@@ -51,6 +51,10 @@ module.exports = {
         defaultValue: 'recibido',
         allowNull: false,
       },
+      ip_origen: {
+        type: Sequelize.STRING(100),
+        allowNull: true,
+      },
     });
   },
 
