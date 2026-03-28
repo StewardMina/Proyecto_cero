@@ -614,16 +614,18 @@ router.post('/panico/reporte', panicoLimiter, async (req, res) => {
     try {
         // Bloquear si ya hay un reporte reciente de la misma IP en los últimos 10 minutos
         const ip = req.ip || req.headers['x-forwarded-for'] || 'desconocida';
-        const hace10min = new Date(Date.now() - 10 * 60 * 1000);
-        const reporteReciente = await ReportePanico.findOne({
-            where: { ip_origen: ip, fecha: { [Op.gte]: hace10min } },
-        });
-        if (reporteReciente) {
-            return res.status(429).json({
-                success: false,
-                message: 'Ya enviaste un reporte de emergencia recientemente. Por favor espera antes de enviar otro.',
+        try {
+            const hace10min = new Date(Date.now() - 10 * 60 * 1000);
+            const reporteReciente = await ReportePanico.findOne({
+                where: { ip_origen: ip, fecha: { [Op.gte]: hace10min } },
             });
-        }
+            if (reporteReciente) {
+                return res.status(429).json({
+                    success: false,
+                    message: 'Ya enviaste un reporte de emergencia recientemente. Por favor espera antes de enviar otro.',
+                });
+            }
+        } catch (_) { /* columna ip_origen aún no existe, ignorar */ }
 
         const reporte = await ReportePanico.create({
             latitud: latitud || null,
@@ -636,7 +638,7 @@ router.post('/panico/reporte', panicoLimiter, async (req, res) => {
             mime_type: mime_type || null,
             fecha: new Date(),
             estado: 'recibido',
-            ip_origen: ip,
+            ...(ip ? { ip_origen: ip } : {}),
         });
 
         // Enviar correo de alerta a las autoridades
