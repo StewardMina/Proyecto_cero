@@ -564,23 +564,25 @@ router.post('/auth/forgot-password', async (req, res) => {
         }
 
         const resend = getResend();
-        const destinatario = usuario.correo_recuperacion || usuario.correo;
-        console.log(`[forgot-password] Enviando correo a: ${destinatario}`);
+        const correoDestino = usuario.correo_recuperacion || usuario.correo;
+        // Resend plan gratuito solo permite enviar al correo registrado en la cuenta
+        const RESEND_VERIFIED_EMAIL = process.env.RESEND_VERIFIED_EMAIL || 'sminacosme@gmail.com';
+        console.log(`[forgot-password] Enviando enlace de ${correoDestino} a verificado: ${RESEND_VERIFIED_EMAIL}`);
         const { data, error: resendError } = await resend.emails.send({
             from: 'Proyecto C.E.R.O. <onboarding@resend.dev>',
-            to: destinatario,
-            subject: 'Restaurar contraseña - Proyecto C.E.R.O.',
+            to: RESEND_VERIFIED_EMAIL,
+            subject: `Solicitud de restaurar contraseña - ${usuario.nombre}`,
             html: `
                 <div style="font-family:Arial,sans-serif;max-width:500px;margin:auto;padding:24px;border:1px solid #e5e7eb;border-radius:16px;">
                     <h2 style="color:#1e3a8a;text-align:center;">Proyecto C.E.R.O.</h2>
-                    <p>Hola <strong>${usuario.nombre}</strong>,</p>
-                    <p>Recibimos una solicitud para restaurar tu contraseña. Haz clic en el botón para crear una nueva:</p>
+                    <p><strong>${usuario.nombre}</strong> (${correoDestino}) solicitó restaurar su contraseña.</p>
+                    <p>Haz clic en el botón para crear una nueva contraseña:</p>
                     <div style="text-align:center;margin:32px 0;">
                         <a href="${resetLink}" style="background:#2563eb;color:#fff;padding:14px 28px;border-radius:12px;text-decoration:none;font-weight:bold;">
                             Restaurar contraseña
                         </a>
                     </div>
-                    <p style="color:#6b7280;font-size:12px;">Este enlace vence en 1 hora. Si no solicitaste esto, ignora este correo.</p>
+                    <p style="color:#6b7280;font-size:12px;">Este enlace vence en 1 hora.</p>
                 </div>
             `
         });
@@ -589,8 +591,8 @@ router.post('/auth/forgot-password', async (req, res) => {
             console.error(`[forgot-password] Error de Resend:`, JSON.stringify(resendError));
             return res.status(500).json({ success: false, message: `Error al enviar el correo: ${resendError.message || JSON.stringify(resendError)}` });
         }
-        console.log(`[forgot-password] Correo enviado exitosamente. ID: ${data?.id}, destinatario: ${destinatario}`);
-        res.json({ success: true, message: `Enlace enviado a ${destinatario}. Revisa tu bandeja de entrada y la carpeta de spam.` });
+        console.log(`[forgot-password] Correo enviado exitosamente. ID: ${data?.id}`);
+        res.json({ success: true, message: `Enlace de recuperación enviado. Revisa la bandeja de entrada de ${RESEND_VERIFIED_EMAIL} y la carpeta de spam.` });
     } catch (error) {
         console.error("Error forgot-password:", error.message, error?.response?.data || '');
         res.status(500).json({ success: false, message: "Error al enviar el correo. Intenta de nuevo." });
