@@ -106,9 +106,15 @@ router.post('/colegios/registro', async (req, res) => {
 
     } catch (error) {
         console.error("Error detallado en registro:", error);
-        res.status(500).json({ 
-            success: false, 
-            message: "Error al registrar: " + error.message 
+        if (error.name === 'SequelizeUniqueConstraintError') {
+            return res.status(400).json({
+                success: false,
+                message: "Ya existe una institución registrada con ese NIT. Si olvidaste tu contraseña, usa la opción de recuperación."
+            });
+        }
+        res.status(500).json({
+            success: false,
+            message: "Error al registrar: " + error.message
         });
     }
 });
