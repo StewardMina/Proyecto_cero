@@ -526,6 +526,11 @@ router.post('/auth/forgot-password', async (req, res) => {
         if (!correo) return res.status(400).json({ success: false, message: "Ingresa tu correo." });
 
         const correoNorm = correo.toLowerCase().trim();
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(correoNorm)) {
+            return res.status(400).json({ success: false, message: "El formato del correo no es válido." });
+        }
+
         let usuario;
         try {
             usuario = await Usuario.findOne({
@@ -537,15 +542,14 @@ router.post('/auth/forgot-password', async (req, res) => {
                 }
             });
         } catch (dbErr) {
-            // Si correo_recuperacion no existe aún en la BD, buscar solo por correo
             usuario = await Usuario.findOne({ where: { correo: correoNorm } });
         }
-        // Siempre responder igual para no revelar si el correo existe
+
         if (!usuario) {
             console.log(`[forgot-password] No se encontró usuario con correo: ${correoNorm}`);
-            return res.json({ success: true, message: "Si el correo está registrado, recibirás un enlace." });
+            return res.status(404).json({ success: false, message: "No encontramos ninguna cuenta asociada a ese correo. Verifica que sea el correo con el que te registraste." });
         }
-        console.log(`[forgot-password] Usuario encontrado: ${usuario.nombre}, correo: ${usuario.correo}, correo_recuperacion: ${usuario.correo_recuperacion}`);
+        console.log(`[forgot-password] Usuario encontrado: ${usuario.nombre}, correo_recuperacion: ${usuario.correo_recuperacion}`);
 
         const token = crypto.randomBytes(32).toString('hex');
         const expires = new Date(Date.now() + 60 * 60 * 1000); // 1 hora
@@ -582,7 +586,7 @@ router.post('/auth/forgot-password', async (req, res) => {
         });
 
         console.log(`[forgot-password] Correo enviado exitosamente a: ${destinatario}`);
-        res.json({ success: true, message: "Si el correo está registrado, recibirás un enlace." });
+        res.json({ success: true, message: `Enlace enviado a ${destinatario}. Revisa tu bandeja de entrada y la carpeta de spam.` });
     } catch (error) {
         console.error("Error forgot-password:", error.message, error?.response?.data || '');
         res.status(500).json({ success: false, message: "Error al enviar el correo. Intenta de nuevo." });

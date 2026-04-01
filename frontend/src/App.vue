@@ -674,7 +674,7 @@
         <div class="text-5xl mb-4">🔑</div>
         <h2 class="text-2xl font-black text-blue-900 mb-2 uppercase">Restaurar Contraseña</h2>
         <p class="text-sm text-gray-500 mb-6">
-          Ingresa tu correo registrado y te enviaremos un enlace para crear una nueva contraseña.
+          Ingresa el correo electrónico con el que te registraste y te enviaremos un enlace para crear una nueva contraseña.
         </p>
         <form @submit.prevent="solicitarResetPassword" class="space-y-4">
           <input
@@ -691,9 +691,11 @@
           >
             {{ cargandoReset ? 'Enviando...' : 'Enviar enlace' }}
           </button>
-          <p v-if="mensajeReset" class="text-sm font-bold" :class="errorReset ? 'text-red-500' : 'text-green-600'">
-            {{ mensajeReset }}
-          </p>
+          <div v-if="mensajeReset" class="p-4 rounded-2xl text-sm font-bold text-left"
+            :class="errorReset ? 'bg-red-50 text-red-600 border border-red-200' : 'bg-green-50 text-green-700 border border-green-200'"
+          >
+            <span class="mr-2">{{ errorReset ? '⚠️' : '✅' }}</span>{{ mensajeReset }}
+          </div>
           <button
             @click="ventana = 'login'"
             type="button"
@@ -2497,7 +2499,7 @@ export default {
         this.mensajeReset = res.data.message;
         this.errorReset = false;
       } catch (e) {
-        this.mensajeReset = e.response?.data?.message || "Error al enviar el correo.";
+        this.mensajeReset = e.response?.data?.message || "Error al enviar el correo. Intenta de nuevo.";
         this.errorReset = true;
       } finally {
         this.cargandoReset = false;
