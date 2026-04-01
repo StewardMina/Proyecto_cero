@@ -799,6 +799,13 @@
             </select>
           </div>
           <input
+            v-model="formColegio.correo"
+            type="email"
+            placeholder="Correo Electrónico"
+            class="w-full p-4 bg-gray-50 border-2 rounded-2xl font-bold outline-none focus:border-blue-600"
+            required
+          />
+          <input
             v-model="formColegio.password"
             type="password"
             placeholder="Contraseña de Administrador"
@@ -2301,6 +2308,7 @@ export default {
       formColegio: {
         nit: "",
         nombre: "",
+        correo: "",
         password: "",
         rector: "",
         ciudad: "",
@@ -2907,6 +2915,7 @@ export default {
           this.formColegio = {
             nit: "",
             nombre: "",
+            correo: "",
             password: "",
             rector: "",
             ciudad: "",
