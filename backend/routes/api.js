@@ -542,8 +542,10 @@ router.post('/auth/forgot-password', async (req, res) => {
         }
         // Siempre responder igual para no revelar si el correo existe
         if (!usuario) {
+            console.log(`[forgot-password] No se encontró usuario con correo: ${correoNorm}`);
             return res.json({ success: true, message: "Si el correo está registrado, recibirás un enlace." });
         }
+        console.log(`[forgot-password] Usuario encontrado: ${usuario.nombre}, correo: ${usuario.correo}, correo_recuperacion: ${usuario.correo_recuperacion}`);
 
         const token = crypto.randomBytes(32).toString('hex');
         const expires = new Date(Date.now() + 60 * 60 * 1000); // 1 hora
@@ -559,6 +561,7 @@ router.post('/auth/forgot-password', async (req, res) => {
 
         const resend = getResend();
         const destinatario = usuario.correo_recuperacion || usuario.correo;
+        console.log(`[forgot-password] Enviando correo a: ${destinatario}`);
         await resend.emails.send({
             from: 'Proyecto C.E.R.O. <onboarding@resend.dev>',
             to: destinatario,
@@ -578,9 +581,10 @@ router.post('/auth/forgot-password', async (req, res) => {
             `
         });
 
+        console.log(`[forgot-password] Correo enviado exitosamente a: ${destinatario}`);
         res.json({ success: true, message: "Si el correo está registrado, recibirás un enlace." });
     } catch (error) {
-        console.error("Error forgot-password:", error);
+        console.error("Error forgot-password:", error.message, error?.response?.data || '');
         res.status(500).json({ success: false, message: "Error al enviar el correo. Intenta de nuevo." });
     }
 });
