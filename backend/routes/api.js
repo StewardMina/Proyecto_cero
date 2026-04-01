@@ -566,7 +566,7 @@ router.post('/auth/forgot-password', async (req, res) => {
         const resend = getResend();
         const destinatario = usuario.correo_recuperacion || usuario.correo;
         console.log(`[forgot-password] Enviando correo a: ${destinatario}`);
-        await resend.emails.send({
+        const { data, error: resendError } = await resend.emails.send({
             from: 'Proyecto C.E.R.O. <onboarding@resend.dev>',
             to: destinatario,
             subject: 'Restaurar contraseña - Proyecto C.E.R.O.',
@@ -585,7 +585,11 @@ router.post('/auth/forgot-password', async (req, res) => {
             `
         });
 
-        console.log(`[forgot-password] Correo enviado exitosamente a: ${destinatario}`);
+        if (resendError) {
+            console.error(`[forgot-password] Error de Resend:`, JSON.stringify(resendError));
+            return res.status(500).json({ success: false, message: `Error al enviar el correo: ${resendError.message || JSON.stringify(resendError)}` });
+        }
+        console.log(`[forgot-password] Correo enviado exitosamente. ID: ${data?.id}, destinatario: ${destinatario}`);
         res.json({ success: true, message: `Enlace enviado a ${destinatario}. Revisa tu bandeja de entrada y la carpeta de spam.` });
     } catch (error) {
         console.error("Error forgot-password:", error.message, error?.response?.data || '');
