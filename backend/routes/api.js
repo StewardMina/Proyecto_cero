@@ -80,8 +80,8 @@ router.post('/estudiantes/carga-masiva', async (req, res) => {
 // --- RUTAS DE COLEGIOS ---
 
 router.post('/colegios/registro', async (req, res) => {
-    const { nit, nombre, password, ubicacion, rector, sector } = req.body;
-    
+    const { nit, nombre, password, ubicacion, rector, sector, correo } = req.body;
+
     try {
         const saltRounds = 10;
         const hashedPassword = await bcrypt.hash(password, saltRounds);
@@ -93,6 +93,7 @@ router.post('/colegios/registro', async (req, res) => {
         await Usuario.create({
             nombre: rector,
             correo: nit,
+            correo_recuperacion: correo ? correo.toLowerCase().trim() : null,
             password: hashedPassword,
             rol: 'admin',
             colegio_id: nuevoColegio.id
@@ -115,9 +116,15 @@ router.post('/colegios/registro', async (req, res) => {
 router.post('/login', async (req, res) => {
     try {
         const { correo, password } = req.body;
-        
+        const { Op } = require('sequelize');
+
         const user = await Usuario.findOne({
-            where: { correo },
+            where: {
+                [Op.or]: [
+                    { correo: correo },
+                    { correo_recuperacion: correo.toLowerCase().trim() }
+                ]
+            },
             include: [{ model: Colegio, attributes: ['nombre'] }]
         });
 
